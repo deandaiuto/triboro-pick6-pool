@@ -1,0 +1,2999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tri Boro Pick 6 Pool</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --dim: #484f58;
+    --green: #238636;
+    --green-bg: #0d4429;
+    --green-text: #3fb950;
+    --red: #da3633;
+    --red-bg: #3d1a1a;
+    --red-text: #f85149;
+    --amber: #9e6a03;
+    --amber-bg: #3d2f00;
+    --amber-text: #e3b341;
+    --blue: #1f6feb;
+    --blue-bg: #0c2d6b;
+    --blue-text: #58a6ff;
+    --accent: #f78166;
+    --gold: #e3b341;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.5; min-height: 100vh; }
+
+  /* ── Layout ── */
+  .app { max-width: 480px; margin: 0 auto; padding: 0 0 80px; }
+  .header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 16px; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; }
+  .header-title { font-size: 17px; font-weight: 600; letter-spacing: -.3px; }
+  .header-title span { color: var(--accent); }
+  .content { padding: 16px; }
+
+  /* ── Auth / Login ── */
+  .login-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; gap: 24px; }
+  .logo { text-align: center; }
+  .logo-icon { font-size: 48px; line-height: 1; margin-bottom: 8px; }
+  .logo-title { font-size: 26px; font-weight: 700; letter-spacing: -.5px; }
+  .logo-title span { color: var(--accent); }
+  .logo-sub { color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; width: 100%; }
+  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+
+  /* ── Form elements ── */
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .5px; }
+  input:not([type=checkbox]):not([type=radio]), select { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: 15px; padding: 10px 12px; outline: none; transition: border-color .15s; -webkit-appearance: none; appearance: none; }
+  input[type=checkbox], input[type=radio] { width: auto; accent-color: var(--accent); cursor: pointer; }
+  input:focus, select:focus { border-color: var(--blue-text); }
+  input::placeholder { color: var(--dim); }
+  .input-group { margin-bottom: 14px; }
+  .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity .15s, transform .08s, box-shadow .08s; text-align: center; box-shadow: 0 3px 0 rgba(0,0,0,.35), 0 4px 8px rgba(0,0,0,.25); }
+  .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,.35), 0 1px 3px rgba(0,0,0,.2); }
+  .btn:active { transform: scale(.98); }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 3px 0 #c2603f, 0 5px 10px rgba(247,129,102,.25); }
+  .btn-primary:active { box-shadow: 0 1px 0 #c2603f, 0 1px 4px rgba(247,129,102,.2); }
+  .btn-primary:disabled { opacity: .35; cursor: not-allowed; }
+  .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); box-shadow: 0 3px 0 #0a0d12, 0 4px 8px rgba(0,0,0,.3); }
+  .btn-secondary:active { box-shadow: 0 1px 0 #0a0d12, 0 1px 3px rgba(0,0,0,.25); }
+  .btn-sm { display: inline-block; width: auto; padding: 6px 14px; font-size: 13px; }
+  .btn-ghost { background: none; border: 1px solid var(--border); color: var(--muted); display: inline-block; width: auto; padding: 6px 12px; font-size: 13px; }
+  .divider { display: flex; align-items: center; gap: 10px; color: var(--dim); font-size: 13px; margin: 16px 0; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .link-btn { background: none; border: none; color: var(--blue-text); font-size: 14px; cursor: pointer; padding: 0; }
+
+  /* ── Tabs ── */
+  .tabs { display: grid; position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--bg2); border-top: 1px solid var(--border); z-index: 20; }
+  .tabs-inner { display: grid; grid-template-columns: repeat(var(--tab-cols, 3), 1fr); }
+  .tab { background: none; border: none; color: var(--muted); padding: 10px 4px 12px; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: color .15s; }
+  .tab svg { width: 22px; height: 22px; }
+  .tab.active { color: var(--accent); }
+  .tab-badge { background: var(--red); color: #fff; font-size: 10px; font-weight: 700; border-radius: 10px; padding: 1px 5px; position: absolute; top: 6px; right: calc(50% - 22px); }
+  .tab-icon-wrap { position: relative; }
+  .more-sheet-item { width: 100%; background: none; border: none; display: flex; align-items: center; gap: 14px; padding: 14px 20px; font-size: 15px; color: var(--text); cursor: pointer; text-align: left; }
+  .more-sheet-item:active { background: var(--bg3); }
+  .more-sheet-item svg { width: 20px; height: 20px; color: var(--muted); flex-shrink: 0; }
+
+  /* ── Section titles ── */
+  .section-head { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 12px; }
+
+  /* ── Metrics ── */
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+  .metric { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 10px; text-align: center; }
+  .metric-val { font-size: 22px; font-weight: 700; }
+  .metric-val.gold { color: var(--gold); }
+  .metric-val.green { color: var(--green-text); }
+  .metric-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Game pick cards ── */
+  .game-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 10px; }
+  .game-time { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .matchup { display: grid; grid-template-columns: 1fr 28px 1fr; gap: 6px; align-items: center; }
+  .team-btn { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 6px; cursor: pointer; text-align: center; transition: border-color .15s, background .15s, transform .08s, box-shadow .08s; color: var(--text); width: 100%; box-shadow: 0 3px 0 rgba(0,0,0,.35), 0 4px 6px rgba(0,0,0,.2); }
+  .team-btn:not(:disabled):active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.15); }
+  .team-btn.selected, .team-btn.correct, .team-btn.wrong { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,.3), 0 1px 3px rgba(0,0,0,.2); }
+  .team-btn:disabled { cursor: default; }
+  .team-btn.selected { background: var(--blue-bg); border-color: var(--blue-text); }
+  .team-btn.correct { background: var(--green-bg); border-color: var(--green-text); }
+  .team-btn.wrong { background: var(--red-bg); border-color: var(--red); opacity: .6; }
+  .team-name { font-size: 13px; font-weight: 600; line-height: 1.2; }
+  .team-loc { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 3px; }
+  .team-abbr { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .vs { text-align: center; font-size: 12px; color: var(--dim); font-weight: 600; }
+  .winner-tag { font-size: 10px; background: var(--green-bg); color: var(--green-text); border-radius: 4px; padding: 2px 5px; margin-top: 4px; display: inline-block; }
+
+  /* ── Progress ── */
+  .progress-wrap { margin-bottom: 16px; }
+  .progress-bar { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .3s; }
+  .progress-label { font-size: 13px; color: var(--muted); }
+
+  /* ── Banners ── */
+  .banner { border-radius: var(--radius); padding: 12px 14px; margin-bottom: 14px; font-size: 14px; font-weight: 500; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; }
+  .banner-green { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green); }
+  .banner-amber { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber); }
+  .banner-blue { background: var(--blue-bg); color: var(--blue-text); border: 1px solid var(--blue); }
+  .banner-red { background: var(--red-bg); color: var(--red-text); border: 1px solid var(--red); }
+
+  /* ── Leaderboard table ── */
+  .lb-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .lb-table th { text-align: left; padding: 6px 8px; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .lb-table td { padding: 9px 8px; border-bottom: 1px solid var(--border); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-table tr:last-child td { border-bottom: none; }
+  .lb-table tr.me td { background: rgba(88,166,255,.06); }
+  .rank { width: 28px; color: var(--muted); font-size: 12px; }
+  .rank.gold { color: var(--gold); font-weight: 700; }
+  .pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+  .pill-green { background: var(--green-bg); color: var(--green-text); }
+  .pill-red { background: var(--red-bg); color: var(--red-text); }
+  .pill-amber { background: var(--amber-bg); color: var(--amber-text); }
+  .pill-blue { background: var(--blue-bg); color: var(--blue-text); }
+  .pill-gray { background: var(--bg3); color: var(--muted); }
+
+  /* ── Admin game editor ── */
+  .game-row { display: grid; grid-template-columns: 1fr 20px 1fr 36px; gap: 6px; align-items: center; margin-bottom: 8px; }
+  .game-row input { font-size: 13px; padding: 8px 10px; }
+  .icon-btn { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); color: var(--muted); cursor: pointer; padding: 0; width: 32px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .icon-btn:hover { color: var(--red-text); border-color: var(--red); }
+
+  /* ── User avatar row ── */
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--blue-bg); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--blue-text); flex-shrink: 0; text-transform: uppercase; }
+  .user-row { display: flex; align-items: center; gap: 10px; }
+  .user-name { font-size: 15px; font-weight: 600; }
+  .user-meta { font-size: 12px; color: var(--muted); }
+
+  /* ── Week switcher ── */
+  .week-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .week-tab { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 13px; cursor: pointer; color: var(--muted); }
+  .week-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+
+  /* ── Pot display ── */
+  .pot-display { background: var(--bg2); border: 1px solid var(--amber); border-radius: var(--radius-lg); padding: 18px; margin-bottom: 20px; text-align: center; }
+  .pot-amount { font-size: 36px; font-weight: 800; color: var(--gold); letter-spacing: -1px; }
+  .pot-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .pot-breakdown { font-size: 12px; color: var(--amber-text); margin-top: 6px; }
+
+  /* ── Spinner ── */
+  .spinner { display: flex; align-items: center; justify-content: center; padding: 48px; color: var(--muted); font-size: 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin .8s linear infinite; display: inline-block; margin-right: 8px; font-size: 18px; }
+
+  /* ── History cards ── */
+  .history-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .history-week { font-size: 14px; font-weight: 600; }
+  .history-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Empty state ── */
+  .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+  .empty p { font-size: 14px; }
+
+  /* ── Toast ── */
+  #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 18px; font-size: 14px; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; white-space: nowrap; z-index: 100; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Admin winner select */
+  .winner-row { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; margin-bottom: 8px; }
+  .winner-row-head { display: flex; justify-content: space-between; align-items: center; }
+  .winner-matchup { font-size: 13px; font-weight: 600; }
+  .winner-time { font-size: 12px; color: var(--muted); }
+  .winner-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .winner-pick { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 8px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text); transition: all .15s; box-shadow: 0 3px 0 rgba(0,0,0,.35), 0 4px 6px rgba(0,0,0,.2); }
+  .winner-pick:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.15); }
+  .winner-pick.selected { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,.3), 0 1px 3px rgba(0,0,0,.2); }
+  .winner-pick:hover { border-color: var(--muted); }
+  .winner-pick.selected { background: var(--green-bg); border-color: var(--green-text); color: var(--green-text); }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, get, push, onValue, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// ── Firebase config ──────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyC9bCUcXZ3ibl3ncjtklxoNrFqMvjeMdcg",
+  authDomain: "pick-6-pool.firebaseapp.com",
+  databaseURL: "https://pick-6-pool-default-rtdb.firebaseio.com",
+  projectId: "pick-6-pool",
+  storageBucket: "pick-6-pool.firebasestorage.app",
+  messagingSenderId: "258950782414",
+  appId: "1:258950782414:web:df364817d52c3b3e6f9f9f",
+  measurementId: "G-6KLDCV5ZNV"
+};
+
+// Admin PIN stored as SHA-256 hash in Firebase /adminPinHash
+const ENTRY_FEE = 5;
+const SEASON_SKIM = 10;    // $10/week skimmed into Most Wins Pot
+const PLAYOFF_ENTRY = 20;  // flat $20 to enter the playoff pool
+const ODDS_API_KEY = 'e36cba40d67cea7cca67adae08bd979e';
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ── State ────────────────────────────────────────────────────
+let currentUser = JSON.parse(localStorage.getItem('pool_user') || sessionStorage.getItem('pool_user') || 'null');
+let liveData = {};         // full DB snapshot
+let currentWeekId = null;
+let myPicks = {};
+let unsub = null;
+
+// ── Toast ────────────────────────────────────────────────────
+function toast(msg, dur = 2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+// ── DB helpers ───────────────────────────────────────────────
+function dbGet(path) { return get(ref(db, path)).then(s => s.val()); }
+function dbSet(path, val) { return set(ref(db, path), val); }
+function dbUpdate(path, val) { return update(ref(db, path), val); }
+function dbPush(path, val) { return push(ref(db, path), val); }
+
+// ── SHA-256 helper ────────────────────────────────────────────────────────
+async function sha256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ── Subscribe to live data ───────────────────────────────────
+function subscribe() {
+  if (unsub) unsub();
+  unsub = onValue(ref(db, '/'), async snap => {
+    liveData = snap.val() || {};
+    // find latest week by default
+    if (!currentWeekId && liveData.weeks) {
+      const ids = Object.keys(liveData.weeks);
+      currentWeekId = ids[ids.length - 1];
+    }
+    renderApp();
+    // Auto-settle if all winners are now recorded
+    await checkAutoSettle();
+    // Start ESPN polling when logged in and week is open
+    const week = getWeek(currentWeekId);
+    if (currentUser && week && !week.settled) {
+      startESPNPolling();
+    } else {
+      stopESPNPolling();
+    }
+  });
+}
+
+// ── Shortcuts ────────────────────────────────────────────────
+function getWeeks() { return liveData.weeks || {}; }
+function isPlayoff(week) { return !!(week && week.playoff); }
+function isSuperBowl(week) { return !!(week && week.superBowl); }
+function playoffPts(entry, games) {
+  if (!entry || !games) return 0;
+  let pts = 0;
+  games.forEach(g => {
+    if (!g.winner) return;
+    if (entry.picks && entry.picks[g.id] === g.winner) pts++;
+    if (g.ou !== null && g.ou !== undefined && entry.ouPicks && entry.ouPicks[g.id] !== undefined) {
+      const total = parseInt(g.awayFinalScore||0) + parseInt(g.homeFinalScore||0);
+      const actual = total > parseFloat(g.ou) ? 'over' : 'under';
+      if (entry.ouPicks[g.id] === actual) pts++;
+    }
+  });
+  return pts;
+}
+function totalPlayoffPts(userId) {
+  let pts = 0;
+  Object.values(getWeeks()).forEach(w => {
+    if (!isPlayoff(w) || !w.settled) return;
+    const e = w.entries ? Object.values(w.entries).find(e => e.userId === userId) : null;
+    pts += playoffPts(e, w.games ? Object.values(w.games) : []);
+  });
+  return pts;
+}
+function playoffStandings() {
+  return Object.entries(getUsers())
+    .filter(([,u]) => !u.isAdmin)
+    .map(([id, u]) => ({ userId: id, name: u.name, pts: totalPlayoffPts(id) }))
+    .sort((a, b) => b.pts - a.pts);
+}
+function getWeek(id) { return (liveData.weeks || {})[id] || null; }
+function getUsers() { return liveData.users || {}; }
+function getUser(id) { return (liveData.users || {})[id] || null; }
+
+function totalPot(week) {
+  if (!week) return 0;
+  const entries = week.entries ? Object.values(week.entries) : [];
+  if (isPlayoff(week)) return entries.length * PLAYOFF_ENTRY + (week.carryover || 0);
+  const weekPot = entries.length * ENTRY_FEE;
+  const carryover = week.carryover || 0;
+  return Math.max(0, weekPot + carryover - SEASON_SKIM);
+}
+
+// Most Wins Pot = $10 * number of settled weeks (plus current if active)
+function seasonFund() {
+  const weeks = getWeeks();
+  return Object.values(weeks).length * SEASON_SKIM;
+}
+
+// Returns sorted leaderboard: [{userId, name, totalCorrect, totalEntries}]
+function seasonStandings() {
+  return Object.entries(getUsers())
+    .filter(([,u]) => !u.isAdmin)
+    .map(([id, u]) => ({ userId: id, name: u.name, totalCorrect: u.totalCorrect || 0, totalEntries: u.totalEntries || 0 }))
+    .sort((a, b) => b.totalCorrect - a.totalCorrect);
+}
+
+// ── Render root ──────────────────────────────────────────────
+function renderApp() {
+  if (!currentUser) { renderLogin(); return; }
+  if (currentUser.isAdmin) { renderAdmin(); } else { renderPlayer(); }
+}
+
+// ══════════════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════════════
+function renderLogin() {
+  document.getElementById('root').innerHTML = `
+  <div class="login-wrap">
+    <div class="logo">
+      <div class="logo-icon">🏈</div>
+      <div class="logo-title">Tri Boro Pick <span>6</span> Pool</div>
+      <div class="logo-sub">$${ENTRY_FEE} per entry · Pick all 6 to win</div>
+    </div>
+    <div class="card" style="max-width:360px;">
+      <div class="card-title">Sign in</div>
+      <div class="input-group">
+        <label>Select your name</label>
+        <select id="sel-user" onchange="loginSelChange()">
+          <option value="">Choose...</option>
+          ${Object.entries(getUsers()).filter(([,u])=>!u.isAdmin).map(([id,u])=>`<option value="${id}">${u.name}</option>`).join('')}
+          <option value="__new">+ Create account</option>
+          <option value="__admin">Commissioner login</option>
+        </select>
+      </div>
+      <div id="login-extra"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <input type="checkbox" id="remember-me" style="width:16px;height:16px;cursor:pointer;accent-color:var(--accent);"/>
+        <label for="remember-me" style="font-size:13px;color:var(--muted);cursor:pointer;">Remember me</label>
+      </div>
+      <button class="btn btn-primary" onclick="doLogin()">Sign in</button>
+    </div>
+  </div>`;
+}
+
+window.loginSelChange = function() {
+  const v = document.getElementById('sel-user').value;
+  const el = document.getElementById('login-extra');
+  if (v === '__new') {
+    el.innerHTML = `
+      <div class="input-group"><label>Your name</label><input id="new-name" placeholder="e.g. Sarah"/></div>
+      <div class="input-group"><label>Email address</label><input id="new-email" type="email" placeholder="you@example.com"/></div>
+      <div class="input-group"><label>Choose a password (up to 10 characters)</label><input id="new-pin" type="password" maxlength="10" placeholder="up to 10 characters"/></div>`;
+  } else if (v === '__admin') {
+    el.innerHTML = `<div class="input-group"><label>Admin password</label><input id="pin-input" type="password" maxlength="20" placeholder="Password"/></div>`;
+  } else if (v) {
+    el.innerHTML = `
+      <div class="input-group"><label>Password</label><input id="pin-input" type="password" maxlength="10" placeholder="Password"/></div>
+      <div style="text-align:right;margin-top:-6px;margin-bottom:10px;">
+        <button class="link-btn" style="font-size:13px;" onclick="showForgotPassword('${v}')">Forgot password?</button>
+      </div>`;
+  } else { el.innerHTML = ''; }
+};
+
+window.showForgotPassword = function(userId) {
+  const el = document.getElementById('login-extra');
+  if (!el) return;
+  el.innerHTML = `
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;">Reset password</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Enter your email address to verify your identity, then choose a new password.</div>
+      <div class="input-group"><label>Your email address</label>
+        <input id="reset-email" type="email" placeholder="you@example.com"/>
+      </div>
+      <div class="input-group"><label>New password (up to 10 characters)</label>
+        <input id="reset-newpw" type="password" maxlength="10" placeholder="New password"/>
+      </div>
+      <div class="input-group"><label>Confirm new password</label>
+        <input id="reset-confirmpw" type="password" maxlength="10" placeholder="Confirm new password"/>
+      </div>
+      <button class="btn btn-primary" onclick="doResetPassword('${userId}')">Reset password</button>
+      <button class="link-btn" style="display:block;text-align:center;margin-top:10px;" onclick="loginSelChange()">Back to sign in</button>
+    </div>`;
+};
+
+window.doResetPassword = async function(userId) {
+  const emailEl = document.getElementById('reset-email');
+  const newPwEl = document.getElementById('reset-newpw');
+  const confirmEl = document.getElementById('reset-confirmpw');
+  if (!emailEl || !newPwEl || !confirmEl) return;
+
+  const email = emailEl.value.trim().toLowerCase();
+  const newPw = newPwEl.value.trim();
+  const confirm = confirmEl.value.trim();
+
+  const user = getUser(userId);
+  if (!user) { toast('User not found.'); return; }
+  if (!email) { toast('Enter your email address.'); return; }
+  if ((user.email || '').toLowerCase() !== email) { toast('Email does not match our records.'); return; }
+  if (!newPw || newPw.length < 1 || newPw.length > 10) { toast('Password must be 1–10 characters.'); return; }
+  if (newPw !== confirm) { toast('Passwords do not match.'); return; }
+
+  await dbUpdate('/users/' + userId, { pin: newPw });
+  toast('Password reset! Sign in with your new password.', 3000);
+
+  const el = document.getElementById('login-extra');
+  if (el) el.innerHTML = '<div class="input-group"><label>Password</label><input id="pin-input" type="password" maxlength="10" placeholder="Password"/></div>'
+      + '<div style="text-align:right;margin-top:-6px;margin-bottom:10px;">'
+      + '<button class="link-btn" style="font-size:13px;" onclick="showForgotPassword(\x27' + userId + '\x27)">Forgot password?</button>'
+      + '</div>';
+};
+
+window.doLogin = async function() {
+  const v = document.getElementById('sel-user').value;
+  if (!v) { toast('Select your name first.'); return; }
+
+  if (v === '__new') {
+    const name = document.getElementById('new-name')?.value.trim();
+    const pin = document.getElementById('new-pin')?.value.trim();
+    if (!name) { toast('Enter your name.'); return; }
+    if (!pin || pin.length < 1 || pin.length > 10) { toast('Password must be between 1 and 10 characters.'); return; }
+    const email = document.getElementById('new-email')?.value.trim() || '';
+    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { toast('Enter a valid email address.'); return; }
+    const newRef = await dbPush('/users', { name, pin, email, isAdmin: false, totalCorrect: 0, totalEntries: 0, joinedAt: serverTimestamp() });
+    currentUser = { id: newRef.key, name, isAdmin: false };
+    const rememberMe = document.getElementById('remember-me')?.checked;
+    if (rememberMe) { localStorage.setItem('pool_user', JSON.stringify(currentUser)); } else { sessionStorage.setItem('pool_user', JSON.stringify(currentUser)); }
+    toast(`Welcome, ${name}!`);
+    renderApp();
+    return;
+  }
+
+  if (v === '__admin') {
+    const pin = document.getElementById('pin-input')?.value;
+    if (!pin) { toast('Enter password.'); return; }
+    const hashed = await sha256(pin);
+    const storedHash = liveData.adminPinHash;
+    if (!storedHash) { toast('Admin PIN not configured in Firebase yet.'); return; }
+    if (hashed !== storedHash) { toast('Wrong password.'); return; }
+    currentUser = { id: '__admin', name: 'Commissioner', isAdmin: true };
+    const rememberMe = document.getElementById('remember-me')?.checked;
+    if (rememberMe) { localStorage.setItem('pool_user', JSON.stringify(currentUser)); } else { sessionStorage.setItem('pool_user', JSON.stringify(currentUser)); }
+    renderApp();
+    return;
+  }
+
+  const pin = document.getElementById('pin-input')?.value;
+  const user = getUser(v);
+  if (!user || pin !== user.pin) { toast('Wrong password.'); return; }
+  currentUser = { id: v, name: user.name, isAdmin: false };
+  const rememberMe = document.getElementById('remember-me')?.checked;
+  if (rememberMe) { localStorage.setItem('pool_user', JSON.stringify(currentUser)); } else { sessionStorage.setItem('pool_user', JSON.stringify(currentUser)); }
+  renderApp();
+};
+
+// ══════════════════════════════════════════════════════════════
+// PLAYER VIEW
+// ══════════════════════════════════════════════════════════════
+let playerTab = 'pick';
+
+function renderPlayer() {
+  const user = getUser(currentUser.id) || {};
+  const week = getWeek(currentWeekId);
+  const allWeeks = getWeeks();
+  const weekIds = Object.keys(allWeeks);
+  const tp = totalPot(week);
+
+  document.getElementById('root').innerHTML = `
+  <div class="app">
+    <div class="header">
+      <div class="header-title">Tri Boro Pick <span>6</span> Pool</div>
+      <button class="btn-ghost btn-sm" onclick="signOut()">Sign out</button>
+    </div>
+    <div class="content">
+      <div class="user-row" style="margin-bottom:16px;">
+        <div class="avatar">${currentUser.name.slice(0,2)}</div>
+        <div>
+          <div class="user-name">${currentUser.name}</div>
+          <div class="user-meta">${user.totalEntries||0} entries · ${user.totalCorrect||0} correct picks · Most Wins Pot: <span style="color:var(--gold)">$${seasonFund()}</span></div>
+        </div>
+      </div>
+      <div id="player-content"></div>
+    </div>
+    <nav class="tabs"><div class="tabs-inner" style="--tab-cols:4;">
+      <button class="tab ${playerTab==='pick'?'active':''}" onclick="switchPlayerTab('pick')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/></svg>My Picks
+      </button>
+      <button class="tab ${playerTab==='leaders'?'active':''}" onclick="switchPlayerTab('leaders')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3z"/><path d="M3 10h12v4H3z"/><path d="M3 17h6v4H3z"/></svg>Week ${week ? week.num : ''}
+      </button>
+      <button class="tab ${playerTab==='allpicks'?'active':''}" onclick="switchPlayerTab('allpicks')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>All Picks
+      </button>
+      <button class="tab ${['history','season','rules','profile'].includes(playerTab)?'active':''}" onclick="openMoreSheet()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>More
+      </button>
+    </div></nav>
+    <div id="more-sheet-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:30;" onclick="closeMoreSheet()"></div>
+    <div id="more-sheet" style="display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--bg2);border-top:1px solid var(--border);border-radius:16px 16px 0 0;z-index:31;padding:8px 0 24px;">
+      <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 14px;"></div>
+      <button class="more-sheet-item" onclick="switchPlayerTab('history')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l2 2"/><circle cx="12" cy="12" r="10"/></svg>
+        <span>My History</span>
+      </button>
+      <button class="more-sheet-item" onclick="switchPlayerTab('season')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span>Most Wins Pot</span>
+      </button>
+      <button class="more-sheet-item" onclick="switchPlayerTab('rules')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <span>Rules</span>
+      </button>
+      <button class="more-sheet-item" onclick="switchPlayerTab('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <span>Profile</span>
+      </button>
+    </div>
+  </div>`;
+
+  renderPlayerContent();
+}
+
+window.openMoreSheet = function() {
+  document.getElementById('more-sheet-overlay').style.display = 'block';
+  document.getElementById('more-sheet').style.display = 'block';
+};
+window.closeMoreSheet = function() {
+  document.getElementById('more-sheet-overlay').style.display = 'none';
+  document.getElementById('more-sheet').style.display = 'none';
+};
+
+window.switchPlayerTab = function(tab) {
+  playerTab = tab;
+  closeMoreSheet();
+  renderPlayer();
+};
+
+function renderPlayerContent() {
+  const c = document.getElementById('player-content');
+  if (!c) return;
+  const week = getWeek(currentWeekId);
+
+  if (playerTab === 'pick') renderPickTab(c, week);
+  else if (playerTab === 'leaders') renderLeadersTab(c, week);
+  else if (playerTab === 'history') renderHistoryTab(c);
+  else if (playerTab === 'season') renderSeasonTab(c);
+  else if (playerTab === 'rules') renderRulesTab(c);
+  else if (playerTab === 'profile') renderProfileTab(c);
+  else renderAllPicksTab(c);
+}
+
+// Returns true if this game has kicked off (kickoff time is in the past)
+// Converts a date+time string (as entered by the admin, intended as Eastern Time)
+// into a true UTC ISO string, so kickoff lock logic and display are correct
+// no matter what timezone the admin's own device happens to be in.
+function easternInputToUTC(dateStr, timeStr) {
+  if (!dateStr || !timeStr) return null;
+  // Determine the UTC offset for America/New_York on that specific date
+  // (handles EST vs EDT automatically using the browser's tz database)
+  const probe = new Date(`${dateStr}T${timeStr}:00`);
+  const tzName = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York', timeZoneName: 'shortOffset'
+  }).formatToParts(probe).find(p => p.type === 'timeZoneName')?.value || 'GMT-5';
+  // tzName looks like "GMT-5" or "GMT-4"
+  const offsetMatch = tzName.match(/GMT([+-]\d+)/);
+  const offsetHours = offsetMatch ? parseInt(offsetMatch[1]) : -5;
+  const utcDate = new Date(`${dateStr}T${timeStr}:00Z`);
+  utcDate.setUTCHours(utcDate.getUTCHours() - offsetHours);
+  return utcDate.toISOString();
+}
+
+function gameKickedOff(g) {
+  if (!g.kickoff) return false;
+  return Date.now() >= new Date(g.kickoff).getTime();
+}
+
+// Format kickoff for display
+function fmtKickoff(kickoff) {
+  if (!kickoff) return 'Kickoff TBD';
+  const d = new Date(kickoff);
+  // Always display in Eastern Time (EST/EDT) regardless of the viewer's device timezone
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    weekday: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  }).formatToParts(d);
+  const get = type => parts.find(p => p.type === type)?.value || '';
+  const day = get('weekday');
+  const hour = get('hour');
+  const minute = get('minute');
+  const ampm = get('dayPeriod').toUpperCase();
+  return `${day} ${hour}:${minute} ${ampm} ET`;
+}
+
+// Returns list of week objects where the pool was active but this user has no entry.
+// "Active" means at least one other player submitted an entry that week.
+function weeksOwed(userId) {
+  const weeks = getWeeks();
+  return Object.values(weeks).filter(w => {
+    if (isPlayoff(w)) return false;           // playoff handled separately
+    const entries = w.entries ? Object.values(w.entries) : [];
+    const hasOtherEntry = entries.some(e => e.userId !== userId);
+    const hasMyEntry = entries.some(e => e.userId === userId);
+    // Only count weeks where at least one OTHER settled week exists before it,
+    // meaning this is genuinely a past week the user missed — not the current one.
+    // Key check: the week must be settled OR its week number is less than current week.
+    const currentWeek = getWeek(currentWeekId);
+    const isPastWeek = w.settled || (currentWeek && w.num < currentWeek.num);
+    return isPastWeek && hasOtherEntry && !hasMyEntry;
+  });
+}
+
+let myOUPicks = {};  // gameId -> 'over'|'under' for playoff
+let myTBGuess = '';  // Super Bowl tiebreaker guess
+
+function renderPickTab(c, week) {
+  if (!week) { c.innerHTML = '<div class="empty"><div class="empty-icon">🏈</div><p>No week open yet.<br>Check back soon!</p></div>'; return; }
+
+  const entries = week.entries ? Object.values(week.entries) : [];
+  const entryList = week.entries ? Object.entries(week.entries) : [];
+  const myEntryPair = entryList.find(([,e]) => e.userId === currentUser.id);
+  const myEntryKey = myEntryPair ? myEntryPair[0] : null;
+  const myEntry = myEntryPair ? myEntryPair[1] : null;
+  const games = week.games ? Object.values(week.games) : [];
+  const tp = totalPot(week);
+  const carryover = week.carryover || 0;
+  const playoff = isPlayoff(week);
+  const superBowl = isSuperBowl(week);
+
+  // Seed picks from existing entry
+  if (myEntry && Object.keys(myPicks).length === 0) {
+    Object.assign(myPicks, myEntry.picks || {});
+    Object.assign(myOUPicks, myEntry.ouPicks || {});
+    if (myEntry.tbGuess) myTBGuess = myEntry.tbGuess;
+  }
+
+  const allKickedOff = games.every(g => gameKickedOff(g));
+  const anyKickedOff = games.some(g => gameKickedOff(g));
+  const pickedCount = games.filter(g => myPicks[g.id]).length;
+  const allPicked = pickedCount === games.length;
+
+  // ── Player money summary ─────────────────────────────────────
+  const uid = currentUser.id;
+  const allWeeks = getWeeks();
+  let totalPaid = 0, totalWon = 0;
+  Object.values(allWeeks).filter(w => !isPlayoff(w)).forEach(w => {
+    if (w.entries && Object.values(w.entries).find(e => e.userId === uid)) totalPaid += ENTRY_FEE;
+  });
+  const enteredPlayoff = Object.values(allWeeks).some(w =>
+    isPlayoff(w) && w.entries && Object.values(w.entries).find(e => e.userId === uid)
+  );
+  if (enteredPlayoff) totalPaid += PLAYOFF_ENTRY;
+  Object.values(allWeeks).filter(w => !isPlayoff(w) && w.settled && w.winners?.length).forEach(w => {
+    if (w.winners.includes(currentUser.name)) totalWon += Math.floor(totalPot(w) / w.winners.length);
+  });
+  const playoffResult = liveData.playoffSeason;
+  if (playoffResult?.paidOut && playoffResult.winners?.includes(currentUser.name)) {
+    totalWon += Math.floor((playoffResult.amount || 0) / playoffResult.winners.length);
+  }
+  const net = totalWon - totalPaid;
+
+  let html = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+    <div class="metric"><div class="metric-val" style="font-size:17px;color:var(--red-text);">$${totalPaid}</div><div class="metric-label">Paid in</div></div>
+    <div class="metric"><div class="metric-val" style="font-size:17px;color:var(--green-text);">$${totalWon}</div><div class="metric-label">Won</div></div>
+    <div class="metric"><div class="metric-val" style="font-size:17px;color:${net>=0?'var(--green-text)':'var(--red-text)'};">${net>=0?'+':'-'}$${Math.abs(net)}</div><div class="metric-label">Net</div></div>
+  </div>
+  <div class="pot-display">
+    <div class="pot-amount">$${tp}</div>
+    <div class="pot-label">${playoff ? (week.playoffLabel || 'Playoff') + ' Pool' : 'Week '+week.num+' pot'}</div>
+    ${playoff
+      ? `<div class="pot-breakdown">$${PLAYOFF_ENTRY} entry · most points through Super Bowl wins</div>`
+      : carryover > 0
+        ? `<div class="pot-breakdown">Includes $${carryover} carryover · $${SEASON_SKIM} goes to Most Wins Pot</div>`
+        : `<div class="pot-breakdown">$${SEASON_SKIM} per week goes to Most Wins Pot</div>`
+    }
+  </div>`;
+
+  if (week.settled) {
+    const winners = week.winners || [];
+    html += winners.length
+      ? `<div class="banner banner-green">🏆 Winner${winners.length>1?'s':''}: ${winners.join(', ')} went 6/6!</div>`
+      : `<div class="banner banner-amber">No winner this week — $${tp} carries over to next week.</div>`;
+  } else if (myEntry && allKickedOff) {
+    html += `<div class="banner banner-blue">All games have kicked off. Picks are locked.</div>`;
+  } else if (myEntry && anyKickedOff) {
+    html += `<div class="banner banner-blue">Some games have kicked off — those picks are locked. You can still change picks for games that haven't started.</div>`;
+  } else if (myEntry) {
+    html += `<div class="banner banner-blue">Picks saved! You can change any pick until the game kicks off.</div>`;
+  }
+
+  games.forEach(g => {
+    const kicked = gameKickedOff(g) || !!week.settled;
+    const myPick = myPicks[g.id] || null;
+    const myOU = myOUPicks[g.id] || null;
+    const hasResult = g.winner && week.settled;
+    const awayClass = (myPick && myPick===g.away && g.away!==g.home) ? (hasResult ? g.winner===g.away?'correct':'wrong' : 'selected') : '';
+    const homeClass = (myPick && myPick===g.home && g.away!==g.home) ? (hasResult ? g.winner===g.home?'correct':'wrong' : 'selected') : '';
+    const kickoffStr = fmtKickoff(g.kickoff);
+    const statusStr = kicked && !week.settled ? '<span style="color:var(--amber-text);font-size:11px;margin-left:6px;">Locked</span>' : '';
+    const sc = lastEspnScores[g.id];
+    let scoreBadge = '';
+    if (sc && sc.status === 'in') {
+      scoreBadge = `<span style="font-size:11px;font-weight:600;color:var(--amber-text);margin-left:8px;">🔴 ${sc.away}–${sc.home} ${sc.detail}</span>`;
+    } else if (hasResult && sc) {
+      scoreBadge = `<span style="font-size:11px;color:var(--muted);margin-left:8px;">Final: ${sc.away}–${sc.home}</span>`;
+    }
+    // Spread display
+    const spreadStr = '';
+    // O/U result
+    let ouResult = null;
+    if (hasResult && g.ou !== null && g.ou !== undefined && g.awayFinalScore !== undefined) {
+      const tot = parseInt(g.awayFinalScore||0)+parseInt(g.homeFinalScore||0);
+      ouResult = tot > g.ou ? 'over' : 'under';
+    }
+    const overClass = playoff ? (myOU==='over' ? (ouResult ? ouResult==='over'?'correct':'wrong' : 'selected') : '') : '';
+    const underClass = playoff ? (myOU==='under' ? (ouResult ? ouResult==='under'?'correct':'wrong' : 'selected') : '') : '';
+
+    html += `<div class="game-card">
+      <div class="game-time">${kickoffStr}${statusStr}${scoreBadge}${spreadStr}</div>
+      <div class="matchup">
+        <button class="team-btn ${awayClass}" ${kicked?'disabled':''} onclick="playerPick('${g.id}','away')">
+          <div class="team-loc">Away</div>
+          <div class="team-name">${g.away}</div>
+          ${hasResult&&g.winner===g.away?`<div class="winner-tag">Winner</div>`:''}
+        </button>
+        <div class="vs">vs</div>
+        <button class="team-btn ${homeClass}" ${kicked?'disabled':''} onclick="playerPick('${g.id}','home')">
+          <div class="team-loc">Home</div>
+          <div class="team-name">${g.home}</div>
+          ${hasResult&&g.winner===g.home?`<div class="winner-tag">Winner</div>`:''}
+        </button>
+      </div>
+      ${playoff && g.ou !== null && g.ou !== undefined ? `<div style="margin-top:10px;">
+        <div style="font-size:11px;color:var(--gold);margin-bottom:5px;">Over/Under: ${g.ou} total points</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <button class="team-btn ${overClass}" ${kicked?'disabled':''} onclick="playerOU('${g.id}','over')" style="padding:7px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:2px;">Over</div>
+            <div style="font-size:13px;font-weight:600;">${g.ou}+</div>
+            ${ouResult==='over'?'<div class="winner-tag">✓ Over</div>':''}
+          </button>
+          <button class="team-btn ${underClass}" ${kicked?'disabled':''} onclick="playerOU('${g.id}','under')" style="padding:7px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:2px;">Under</div>
+            <div style="font-size:13px;font-weight:600;">${g.ou}−</div>
+            ${ouResult==='under'?'<div class="winner-tag">✓ Under</div>':''}
+          </button>
+        </div>
+      </div>` : ''}
+    </div>`;
+  });
+  // Super Bowl tiebreaker
+  if (superBowl && !week.settled) {
+    const tbLocked = games.some(g => gameKickedOff(g));
+    html += `<div class="game-card" style="border-color:var(--gold);">
+      <div style="font-size:12px;color:var(--gold);font-weight:600;margin-bottom:8px;">🏆 Super Bowl Tiebreaker</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">Closest combined final score without going over wins in a tie.</div>
+      <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Your total score guess</label>
+        <input type="number" id="tb-guess" value="${myTBGuess||myEntry?.tbGuess||''}" placeholder="e.g. 48" ${tbLocked?'disabled':''}
+          style="font-size:16px;padding:10px;font-weight:600;text-align:center;" oninput="myTBGuess=this.value"/>
+      </div>
+    </div>`;
+  }
+  if (superBowl && week.settled) {
+    const sbGame = games[0];
+    if (sbGame && sbGame.awayFinalScore !== undefined) {
+      const tot = parseInt(sbGame.awayFinalScore||0)+parseInt(sbGame.homeFinalScore||0);
+      html += `<div style="text-align:center;font-size:13px;color:var(--muted);margin-top:4px;">Final combined score: <strong style="color:var(--text);">${tot}</strong></div>`;
+    }
+  }
+
+  if (!week.settled && !allKickedOff) {
+    // Count only games that haven't kicked off yet
+    const unlockedGames = games.filter(g => !gameKickedOff(g));
+    const unlockedPicked = unlockedGames.filter(g => myPicks[g.id]).length;
+    html += `<div class="progress-wrap">
+      <div class="progress-label">${pickedCount} of ${games.length} picked</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${Math.round(pickedCount/games.length*100)}%"></div></div>
+    </div>`;
+    if (!myEntry) {
+      const owed = weeksOwed(currentUser.id);
+      const totalOwed = (owed.length + 1) * ENTRY_FEE; // missed weeks + this week
+      const backPayNote = owed.length > 0
+        ? `<div class="banner banner-amber" style="margin-bottom:10px;">
+            You're joining in week ${week.num}. You owe $${totalOwed} total —
+            $${owed.length * ENTRY_FEE} for ${owed.length} missed week${owed.length>1?'s':''} + $${ENTRY_FEE} for this week.
+            Missed weeks count as 0/${games.length} correct.
+           </div>`
+        : '';
+      html += backPayNote;
+      html += `<button class="btn btn-primary" ${!allPicked ? 'disabled' : ''} onclick="submitPicks()">
+        Submit picks — $${totalOwed}${owed.length > 0 ? ` (${owed.length+1} weeks)` : ''}
+      </button>`;
+    } else {
+      html += `<button class="btn btn-primary" onclick="savePicks()">Save updated picks</button>`;
+    }
+  }
+
+  if (week.settled && myEntry) {
+    html += `<div style="text-align:center;margin-top:14px;font-size:15px;color:var(--muted);">You got <strong style="color:var(--text);">${myEntry.correct||0}/${games.length}</strong> correct.</div>`;
+  }
+
+  c.innerHTML = html;
+}
+
+window.playerPick = function(gameId, side) {
+  const week = getWeek(currentWeekId);
+  if (!week) return;
+  const g = week.games ? Object.values(week.games).find(g => g.id === gameId) : null;
+  if (!g || gameKickedOff(g)) return;
+  const pick = side === 'away' ? g.away : g.home;
+  if (!pick) return; // don't allow picking empty team names
+  myPicks[gameId] = pick;
+  renderPickTab(document.getElementById('player-content'), week);
+};
+
+window.submitPicks = async function() {
+  const week = getWeek(currentWeekId);
+  if (!week) return;
+  const games = week.games ? Object.values(week.games) : [];
+  if (Object.keys(myPicks).length < games.length) { toast('Pick a winner for every game.'); return; }
+
+  const entryList = week.entries ? Object.entries(week.entries) : [];
+  if (entryList.find(([,e]) => e.userId === currentUser.id)) { toast('Already submitted.'); return; }
+
+  const missed = weeksOwed(currentUser.id);
+  const updates = {};
+
+  // Backfill a 0-correct entry for every missed week
+  for (const missedWeek of missed) {
+    const missedWeekId = Object.entries(getWeeks()).find(([,w]) => w.num === missedWeek.num)?.[0];
+    if (!missedWeekId) continue;
+    const newKey = 'e_' + currentUser.id + '_late';
+    updates[`/weeks/${missedWeekId}/entries/${newKey}`] = {
+      userId: currentUser.id,
+      name: currentUser.name,
+      picks: {},
+      correct: 0,
+      lateJoin: true,
+      submittedAt: Date.now()
+    };
+  }
+
+  // Submit this week's picks
+  const thisKey = 'e_' + currentUser.id + '_' + currentWeekId;
+  const thisEntry = {
+    userId: currentUser.id,
+    name: currentUser.name,
+    picks: myPicks,
+    correct: null,
+    submittedAt: Date.now()
+  };
+  if (isPlayoff(week)) {
+    thisEntry.ouPicks = { ...myOUPicks };
+    if (isSuperBowl(week) && myTBGuess) thisEntry.tbGuess = parseInt(myTBGuess);
+  }
+  updates[`/weeks/${currentWeekId}/entries/${thisKey}`] = thisEntry;
+
+  // Update user totals — entries count includes missed weeks
+  const userData = getUser(currentUser.id);
+  const prevEntries = userData?.totalEntries || 0;
+  if (!isPlayoff(week)) {
+    updates[`/users/${currentUser.id}/totalEntries`] = prevEntries + missed.length + 1;
+  }
+
+  await update(ref(db, '/'), updates);
+
+  myPicks = {}; myOUPicks = {}; myTBGuess = '';
+  const totalOwed = isPlayoff(week) ? PLAYOFF_ENTRY : (missed.length + 1) * ENTRY_FEE;
+  const msg = isPlayoff(week)
+    ? `Playoff picks submitted! $${totalOwed} entry. 🏆`
+    : missed.length > 0
+      ? `Entered! You owe $${totalOwed} for ${missed.length + 1} weeks. Picks are live 🏈`
+      : `Picks submitted! You can still change picks until each game kicks off 🏈`;
+  toast(msg, 4000);
+  playerTab = 'pick';
+};
+
+window.playerOU = function(gameId, pick) {
+  const week = getWeek(currentWeekId);
+  if (!week) return;
+  const g = week.games ? Object.values(week.games).find(g => g.id === gameId) : null;
+  if (!g || gameKickedOff(g)) return;
+  myOUPicks[gameId] = pick;
+  renderPickTab(document.getElementById('player-content'), week);
+};
+
+window.savePicks = async function() {
+  const week = getWeek(currentWeekId);
+  if (!week) return;
+  const games = week.games ? Object.values(week.games) : [];
+  const entryList = week.entries ? Object.entries(week.entries) : [];
+  const myEntryPair = entryList.find(([,e]) => e.userId === currentUser.id);
+  if (!myEntryPair) { toast('No entry found — submit first.'); return; }
+  const [myEntryKey] = myEntryPair;
+
+  // Only update picks for games that haven't kicked off
+  const updates = {};
+  games.forEach(g => {
+    if (!gameKickedOff(g) && myPicks[g.id]) {
+      updates[`/weeks/${currentWeekId}/entries/${myEntryKey}/picks/${g.id}`] = myPicks[g.id];
+    }
+    if (isPlayoff(week) && !gameKickedOff(g) && myOUPicks[g.id]) {
+      updates[`/weeks/${currentWeekId}/entries/${myEntryKey}/ouPicks/${g.id}`] = myOUPicks[g.id];
+    }
+  });
+  if (isSuperBowl(week) && myTBGuess) {
+    updates[`/weeks/${currentWeekId}/entries/${myEntryKey}/tbGuess`] = parseInt(myTBGuess);
+  }
+  await update(ref(db, '/'), updates);
+  toast('Picks updated ✓');
+};
+
+// Builds the picks detail HTML for a single week (used by renderAllPicksTab)
+// Deduplicate entries by name
+function dedupEntries(allEntries) {
+  const byName = {};
+  (allEntries || []).forEach(e => {
+    const key = (e.name||'').toLowerCase().trim();
+    if (!byName[key]) { byName[key] = e; return; }
+    const ex = byName[key];
+    if (ex.lateJoin && !e.lateJoin) { byName[key] = e; return; }
+    if (!ex.lateJoin && e.lateJoin) return;
+    if (Object.keys(e.picks||{}).length > Object.keys(ex.picks||{}).length) byName[key] = e;
+  });
+  return Object.values(byName);
+}
+
+function teamAbbr(name) {
+  if (!name) return '?';
+  const overrides = {
+    'Los Angeles Rams': 'LAR', 'Los Angeles Chargers': 'LAC',
+    'New York Giants': 'NYG', 'New York Jets': 'NYJ',
+  };
+  if (overrides[name.trim()]) return overrides[name.trim()];
+  const words = name.trim().split(' ');
+  const cityWords = words.length > 1 ? words.slice(0, -1) : words;
+  if (cityWords.length === 1) return cityWords[0].slice(0, 3).toUpperCase();
+  return cityWords.map(w => w[0].toUpperCase()).join('');
+}
+
+function buildWeekPicksGrid(w) {
+  const games = w.games ? Object.values(w.games) : [];
+  const settled = !!w.settled;
+  const entries = dedupEntries(w.entries ? Object.values(w.entries) : []);
+  const revealedGames = games.filter(g => gameKickedOff(g) || settled);
+  const hiddenCount = games.length - revealedGames.length;
+
+  if (!revealedGames.length) {
+    return '<div style="padding:12px;font-size:13px;color:var(--muted);text-align:center;">Picks hidden until kickoff.</div>';
+  }
+
+  const sorted = [...entries].sort((a,b) => (b.correct??-1)-(a.correct??-1) || (a.name||'').localeCompare(b.name||''));
+
+  let html = '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">';
+  html += '<table style="border-collapse:collapse;font-size:12px;min-width:100%;">';
+  html += '<thead><tr style="border-bottom:1px solid var(--border);">';
+  html += '<th style="text-align:left;padding:6px 10px;color:var(--muted);font-weight:500;font-size:11px;position:sticky;left:0;background:var(--bg2);min-width:80px;z-index:2;">Player</th>';
+
+  revealedGames.forEach(g => {
+    const hasResult = !!g.winner;
+    html += `<th style="text-align:center;padding:6px 5px;color:var(--muted);font-weight:500;font-size:11px;white-space:nowrap;min-width:50px;">${teamAbbr(g.away)}<br><span style="color:var(--dim);font-weight:400;">@${teamAbbr(g.home)}</span>${hasResult ? `<br><span style="color:var(--green-text);font-size:10px;">Win:${teamAbbr(g.winner)}</span>` : ''}</th>`;
+  });
+
+  html += '<th style="text-align:center;padding:6px 8px;color:var(--muted);font-weight:500;font-size:11px;white-space:nowrap;">Score</th>';
+  html += '</tr></thead><tbody>';
+
+  sorted.forEach(e => {
+    const isMe = e.userId === currentUser.id;
+    const rowBg = isMe ? '#0c2d6b' : 'var(--bg2)';
+    html += `<tr style="border-bottom:0.5px solid var(--border);">`;
+    html += `<td style="padding:7px 10px;font-weight:${isMe?'600':'400'};font-size:12px;color:var(--text);position:sticky;left:0;background:${rowBg};white-space:nowrap;z-index:1;">${e.name}${isMe ? ' <span style="color:var(--muted);font-size:10px;">you</span>' : ''}</td>`;
+
+    revealedGames.forEach(g => {
+      const myPick = e.picks ? e.picks[g.id] : null;
+      const hasResult = !!g.winner;
+      const correct = hasResult && myPick === g.winner;
+      const wrong   = hasResult && myPick && myPick !== g.winner;
+      const label   = myPick ? teamAbbr(myPick) : '-';
+      let bg = 'transparent', color = 'var(--muted)';
+      if (correct)     { bg = 'var(--green-bg)';  color = 'var(--green-text)'; }
+      else if (wrong)  { bg = 'var(--red-bg)';    color = 'var(--red-text)'; }
+      else if (myPick) { color = 'var(--text)'; }
+      html += `<td style="text-align:center;padding:5px 4px;"><span style="display:inline-block;background:${bg};color:${color};border-radius:4px;padding:2px 5px;font-size:11px;font-weight:500;min-width:30px;">${label}</span></td>`;
+    });
+
+    const gameCount = games.length;
+    let sBg = 'transparent', sColor = 'var(--muted)', sText = '-';
+    if (settled && e.correct !== null && e.correct !== undefined) {
+      sText = e.correct + '/' + gameCount;
+      if (e.correct === gameCount) { sBg = 'var(--green-bg)'; sColor = 'var(--green-text)'; }
+      else if (e.correct >= 4)     { sBg = 'var(--amber-bg)'; sColor = 'var(--amber-text)'; }
+      else                         { sBg = 'var(--red-bg)';   sColor = 'var(--red-text)'; }
+    }
+    html += `<td style="text-align:center;padding:5px 6px;"><span style="display:inline-block;background:${sBg};color:${sColor};border-radius:10px;padding:2px 7px;font-size:11px;font-weight:600;">${sText}</span></td></tr>`;
+  });
+
+  html += '</tbody></table></div>';
+  if (hiddenCount > 0) {
+    html += `<div style="text-align:center;padding:8px;font-size:11px;color:var(--muted);">🔒 ${hiddenCount} more game${hiddenCount!==1?'s':''} — picks revealed at kickoff</div>`;
+  }
+  return html;
+}
+
+function renderAllPicksTab(c) {
+  const allWeeks = getWeeks();
+  const visibleWeeks = Object.values(allWeeks)
+    .filter(w => {
+      const games = w.games ? Object.values(w.games) : [];
+      return games.some(g => gameKickedOff(g) || w.settled);
+    })
+    .sort((a, b) => b.num - a.num);
+
+  if (!visibleWeeks.length) {
+    c.innerHTML = '<div class="empty"><div class="empty-icon">🔒</div><p>Picks are hidden until each game kicks off.</p><p style="margin-top:8px;font-size:12px;color:var(--dim);">Check back at kickoff time.</p></div>';
+    return;
+  }
+
+  let html = `<div class="section-head" style="margin-bottom:12px;">Everyone's picks</div>`;
+
+  visibleWeeks.forEach((w, idx) => {
+    const games = w.games ? Object.values(w.games) : [];
+    const revealedCount = games.filter(g => gameKickedOff(g) || w.settled).length;
+    const hiddenCount = games.length - revealedCount;
+    const weekLabel = w.playoff ? (w.playoffLabel || 'Playoff') : ('Week ' + w.num);
+    const detailId = 'allpicks-detail-' + w.num;
+    const isOpen = idx === 0;
+
+    html += `<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
+      <span id="${detailId}-chevron" onclick="toggleAllPicksDetail('${detailId}')" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;flex-shrink:0;cursor:pointer;align-self:flex-start;margin-top:14px;transition:transform .2s;transform-origin:center;${isOpen?'transform:rotate(180deg)':''}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      <div style="flex:1;min-width:0;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;" onclick="toggleAllPicksDetail('${detailId}')">
+          <div>
+            <div style="font-size:14px;font-weight:600;">${weekLabel}${w.settled ? '' : ' <span style="font-size:11px;color:var(--amber-text);">(live)</span>'}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">${revealedCount}/${games.length} games revealed${hiddenCount>0?' · '+hiddenCount+' still hidden':''}</div>
+          </div>
+          <div>${w.settled && w.winners?.length ? `<span class="pill pill-green" style="font-size:11px;">🏆 ${w.winners.join(', ')}</span>` : w.settled ? '<span class="pill pill-gray" style="font-size:11px;">No winner</span>' : ''}</div>
+        </div>
+        <div id="${detailId}" style="display:${isOpen?'block':'none'};">
+          ${buildWeekPicksGrid(w)}
+        </div>
+      </div>
+    </div>`;
+  });
+
+  c.innerHTML = html;
+}
+
+window.toggleAllPicksDetail = function(id) {
+  const el = document.getElementById(id);
+  const chevron = document.getElementById(id + '-chevron');
+  if (!el) return;
+  const isOpen = el.style.display !== 'none';
+  el.style.display = isOpen ? 'none' : 'block';
+  if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+};
+
+function renderProfileTab(c) {
+  const user = getUser(currentUser.id) || {};
+  const weeks = getWeeks();
+  const uid = currentUser.id;
+
+  // ── Money paid ───────────────────────────────────────────────
+  let regularPaid = 0, playoffPaid = 0;
+  // Regular season: $ENTRY_FEE per week entered (including late-backfilled weeks)
+  Object.values(weeks).filter(w => !isPlayoff(w)).forEach(w => {
+    const entries = w.entries ? Object.values(w.entries) : [];
+    if (entries.find(e => e.userId === uid)) regularPaid += ENTRY_FEE;
+  });
+  // Playoff: $PLAYOFF_ENTRY flat if they entered any playoff week
+  const enteredPlayoff = Object.values(weeks).some(w =>
+    isPlayoff(w) && w.entries && Object.values(w.entries).find(e => e.userId === uid)
+  );
+  if (enteredPlayoff) playoffPaid = PLAYOFF_ENTRY;
+  const totalPaid = regularPaid + playoffPaid;
+
+  // ── Money won ────────────────────────────────────────────────
+  let regularWon = 0, playoffWon = 0;
+  // Regular season wins
+  Object.values(weeks).filter(w => !isPlayoff(w) && w.settled && w.winners?.length).forEach(w => {
+    if (w.winners.includes(currentUser.name)) {
+      const winnerCount = w.winners.length;
+      regularWon += Math.floor(totalPot(w) / winnerCount);
+    }
+  });
+  // Playoff win
+  const playoffResult = liveData.playoffSeason;
+  if (playoffResult?.paidOut && playoffResult.winners?.includes(currentUser.name)) {
+    playoffWon = Math.floor((playoffResult.amount || 0) / playoffResult.winners.length);
+  }
+  const totalWon = regularWon + playoffWon;
+  const net = totalWon - totalPaid;
+
+  // ── Weekly breakdown ─────────────────────────────────────────
+  const myWeeks = Object.values(weeks).filter(w =>
+    w.entries && Object.values(w.entries).find(e => e.userId === uid)
+  ).sort((a, b) => a.num - b.num);
+
+  c.innerHTML = `
+  <div style="padding-bottom:8px;">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+      <div class="avatar" style="width:52px;height:52px;font-size:18px;">${currentUser.name.slice(0,2).toUpperCase()}</div>
+      <div>
+        <div style="font-size:17px;font-weight:600;">${currentUser.name}</div>
+        <div style="font-size:13px;color:var(--muted);">${user.email || 'No email on file'}</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
+      <div class="metric"><div class="metric-val" style="color:var(--red-text);">$${totalPaid}</div><div class="metric-label">Total paid</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--green-text);">$${totalWon}</div><div class="metric-label">Total won</div></div>
+      <div class="metric"><div class="metric-val" style="color:${net>=0?'var(--green-text)':'var(--red-text)'};">${net>=0?'+':'-'}$${Math.abs(net)}</div><div class="metric-label">Net</div></div>
+    </div>
+
+    ${myWeeks.length ? `<div class="card" style="margin-bottom:14px;">
+      <div class="section-head" style="margin-bottom:10px;">Week by week</div>
+      <table class="lb-table"><thead><tr>
+        <th>Week</th><th style="text-align:right">Paid</th><th style="text-align:right">Result</th><th style="text-align:right">Won</th>
+      </tr></thead><tbody>
+      ${myWeeks.map(w => {
+        const e = Object.values(w.entries).find(e => e.userId === uid);
+        const playoff = isPlayoff(w);
+        const fee = playoff ? PLAYOFF_ENTRY : ENTRY_FEE;
+        const label = playoff ? (w.playoffLabel || 'Playoff') : ('Week ' + w.num);
+        const won = w.settled && w.winners?.includes(currentUser.name);
+        const winnerCount = w.winners?.length || 1;
+        const prize = won ? Math.floor(totalPot(w) / winnerCount) : 0;
+        const score = w.settled
+          ? (playoff ? ((e.playoffPts||0) + ' pts') : ((e.correct||0) + '/' + Object.values(w.games||{}).length))
+          : 'Pending';
+        const wonStyle = won ? 'color:var(--green-text);font-weight:600;' : 'color:var(--muted);';
+        return '<tr>'
+          + '<td>' + label + (e.lateJoin ? ' <span style="font-size:10px;color:var(--amber-text);">late</span>' : '') + '</td>'
+          + '<td style="text-align:right;color:var(--red-text);">$' + fee + '</td>'
+          + '<td style="text-align:right;">' + score + '</td>'
+          + '<td style="text-align:right;' + wonStyle + '">' + (prize > 0 ? '$' + prize : '—') + '</td>'
+          + '</tr>';
+      }).join('')}
+      </tbody></table>
+    </div>` : ''}
+
+    <div class="card" style="margin-bottom:12px;">
+      <div class="section-head" style="margin-bottom:14px;">Change email</div>
+      <div class="input-group">
+        <label>New email address</label>
+        <input id="profile-email" type="email" value="${user.email || ''}" placeholder="you@example.com"/>
+      </div>
+      <div class="input-group">
+        <label>Current password to confirm</label>
+        <input id="profile-email-pw" type="password" maxlength="10" placeholder="Your password"/>
+      </div>
+      <button class="btn btn-primary" onclick="saveProfileEmail()">Update email</button>
+    </div>
+
+    <div class="card">
+      <div class="section-head" style="margin-bottom:14px;">Change password</div>
+      <div class="input-group">
+        <label>Current password</label>
+        <input id="profile-cur-pw" type="password" maxlength="10" placeholder="Current password"/>
+      </div>
+      <div class="input-group">
+        <label>New password (up to 10 characters)</label>
+        <input id="profile-new-pw" type="password" maxlength="10" placeholder="New password"/>
+      </div>
+      <div class="input-group">
+        <label>Confirm new password</label>
+        <input id="profile-confirm-pw" type="password" maxlength="10" placeholder="Confirm new password"/>
+      </div>
+      <button class="btn btn-primary" onclick="saveProfilePassword()">Update password</button>
+    </div>
+  </div>`;
+}
+
+window.saveProfileEmail = async function() {
+  const newEmail = document.getElementById('profile-email')?.value.trim();
+  const pw = document.getElementById('profile-email-pw')?.value;
+  const user = getUser(currentUser.id);
+  if (!user) { toast('User not found.'); return; }
+  if (!newEmail || !/^[^@]+@[^@]+\.[^@]+$/.test(newEmail)) { toast('Enter a valid email address.'); return; }
+  if (!pw || pw !== user.pin) { toast('Wrong password.'); return; }
+  await dbUpdate('/users/' + currentUser.id, { email: newEmail });
+  toast('Email updated ✓', 2500);
+};
+
+window.saveProfilePassword = async function() {
+  const curPw = document.getElementById('profile-cur-pw')?.value;
+  const newPw = document.getElementById('profile-new-pw')?.value;
+  const confirmPw = document.getElementById('profile-confirm-pw')?.value;
+  const user = getUser(currentUser.id);
+  if (!user) { toast('User not found.'); return; }
+  if (!curPw || curPw !== user.pin) { toast('Current password is incorrect.'); return; }
+  if (!newPw || newPw.length < 1 || newPw.length > 10) { toast('New password must be 1–10 characters.'); return; }
+  if (newPw !== confirmPw) { toast('Passwords do not match.'); return; }
+  await dbUpdate('/users/' + currentUser.id, { pin: newPw });
+  toast('Password updated ✓', 2500);
+  // Clear fields
+  ['profile-cur-pw','profile-new-pw','profile-confirm-pw'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+};
+
+function renderRulesTab(c) {
+  c.innerHTML = `
+  <div style="padding-bottom:8px;">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:22px;font-weight:700;letter-spacing:-.5px;">Pool Rules</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;">Pick 6 · No point spread</div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;">
+      <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;">
+        <div style="min-width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">1</div>
+        <div style="padding-top:3px;">
+          <span style="color:var(--text);">Pick the winner of each of the 6 games with </span>
+          <span style="color:var(--accent);font-weight:700;">NO POINT SPREAD</span>
+          <span style="color:var(--text);">. You must get all 6 correct to win. Thursday Night Football games are excluded.</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;">
+        <div style="min-width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">2</div>
+        <div style="padding-top:3px;color:var(--text);">If there is more than one winner the pot will be split equally.</div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;">
+        <div style="min-width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">3</div>
+        <div style="padding-top:3px;color:var(--text);">If there is no winner the pot will carry over into the following week.</div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;">
+        <div style="min-width:28px;height:28px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">4</div>
+        <div style="padding-top:3px;color:var(--text);">To enter an active pool you must pay <strong>$${ENTRY_FEE}</strong> for every week the pool has been active. Missed weeks count as 0/${6} correct.</div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;">
+        <div style="min-width:28px;height:28px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">5</div>
+        <div style="padding-top:3px;color:var(--text);"><strong>Ties count as losses!</strong> A tie game does not count as picking that team correctly.</div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="min-width:28px;height:28px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#000;flex-shrink:0;">6</div>
+        <div style="padding-top:3px;color:var(--text);">Each week <strong>$${SEASON_SKIM}</strong> is taken out of the pot. At the end of the regular season (Week 18) the player with the most correct picks on the year wins that pot.</div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;">Regular season quick summary</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="font-size:12px;color:var(--muted);">Entry fee</div>
+        <div style="font-size:12px;color:var(--text);font-weight:500;">$${ENTRY_FEE} per week</div>
+        <div style="font-size:12px;color:var(--muted);">Games per week</div>
+        <div style="font-size:12px;color:var(--text);font-weight:500;">6 games</div>
+        <div style="font-size:12px;color:var(--muted);">Point spread</div>
+        <div style="font-size:12px;color:var(--accent);font-weight:600;">None — straight up</div>
+        <div style="font-size:12px;color:var(--muted);">To win weekly pot</div>
+        <div style="font-size:12px;color:var(--text);font-weight:500;">All 6 correct</div>
+        <div style="font-size:12px;color:var(--muted);">Most Wins Pot</div>
+        <div style="font-size:12px;color:var(--gold);font-weight:500;">$${SEASON_SKIM}/week · most wins</div>
+        <div style="font-size:12px;color:var(--muted);">Ties</div>
+        <div style="font-size:12px;color:var(--red-text);font-weight:500;">Count as losses</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-bottom:14px;">
+      <div style="font-size:18px;font-weight:700;letter-spacing:-.3px;">🏆 Playoff Rules</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:2px;">Wild Card through Super Bowl</div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;">
+        <div style="min-width:28px;height:28px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#000;flex-shrink:0;">1</div>
+        <div style="padding-top:3px;color:var(--text);">Pick the winner of each game <span style="color:var(--gold);font-weight:700;">WITH THE SPREAD AND THE OVER/UNDER</span>. You get 1 point for each correct pick — potentially 2 points per game.</div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;">
+        <div style="min-width:28px;height:28px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#000;flex-shrink:0;">2</div>
+        <div style="padding-top:3px;color:var(--text);">Points accumulate from Wild Card all the way through the Super Bowl. The entry with the most total points wins the playoff pool.</div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;">
+        <div style="min-width:28px;height:28px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#000;flex-shrink:0;">3</div>
+        <div style="padding-top:3px;color:var(--text);">For the Super Bowl, you must also guess the combined final score as a tiebreaker. Closest without going over wins in the event of a tie.</div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="min-width:28px;height:28px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#000;flex-shrink:0;">4</div>
+        <div style="padding-top:3px;color:var(--text);">If you haven't been in the regular season pool and want to join the playoffs, you must pay <strong>$${ENTRY_FEE}</strong> for every week the regular season pool ran plus <strong>$${PLAYOFF_ENTRY}</strong> for the playoff pool.</div>
+      </div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--gold);border-radius:var(--radius);padding:14px 16px;">
+      <div style="font-size:13px;font-weight:600;color:var(--gold);margin-bottom:8px;">Playoff quick summary</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="font-size:12px;color:var(--muted);">Entry fee</div>
+        <div style="font-size:12px;color:var(--gold);font-weight:500;">$${PLAYOFF_ENTRY} flat</div>
+        <div style="font-size:12px;color:var(--muted);">Scoring</div>
+        <div style="font-size:12px;color:var(--text);font-weight:500;">1pt winner + 1pt O/U</div>
+        <div style="font-size:12px;color:var(--muted);">Point spread</div>
+        <div style="font-size:12px;color:var(--gold);font-weight:600;">Yes — included</div>
+        <div style="font-size:12px;color:var(--muted);">To win playoff pot</div>
+        <div style="font-size:12px;color:var(--text);font-weight:500;">Most pts through SB</div>
+        <div style="font-size:12px;color:var(--muted);">Tiebreaker</div>
+        <div style="font-size:12px;color:var(--text);font-weight:500;">SB combined score (no over)</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderSeasonTab(c) {
+  const fund = seasonFund();
+  const standings = seasonStandings();
+  const season = liveData.season || {};
+  const paid = !!season.paidOut;
+
+  let html = `<div class="pot-display" style="margin-bottom:16px;">
+    <div class="pot-amount">$${fund}</div>
+    <div class="pot-label">Most Wins Pot</div>
+    <div class="pot-breakdown">Most total correct picks at end of regular season wins</div>
+  </div>`;
+
+  if (paid) {
+    html += `<div class="banner banner-green">🏆 Season paid out to ${season.winners?.join(', ')} — $${season.amount}!</div>`;
+  }
+
+  const top = standings[0]?.totalCorrect || 0;
+  const leaders = standings.filter(p => p.totalCorrect === top && top > 0);
+  if (leaders.length && !paid) {
+    const splitAmt = Math.floor(fund / leaders.length);
+    html += `<div class="banner banner-amber">Current leader${leaders.length>1?'s':''}: <strong>${leaders.map(p=>p.name).join(', ')}</strong> · ${top} correct${leaders.length>1?' · $'+splitAmt+' each if tied':''}</div>`;
+  }
+
+  html += `<div class="section-head" style="margin-bottom:10px;">Standings</div>
+  <div class="card"><table class="lb-table"><thead><tr>
+    <th class="rank">#</th><th>Name</th><th style="text-align:right">Correct</th><th style="text-align:right">Entries</th>
+  </tr></thead><tbody>`;
+
+  standings.forEach((p, i) => {
+    const isMe = p.userId === currentUser.id;
+    const isLeader = i === 0 && p.totalCorrect > 0;
+    html += `<tr class="${isMe?'me':''}">
+      <td>${isLeader?'<span class="rank gold">🥇</span>':`<span class="rank">${i+1}</span>`}</td>
+      <td style="font-weight:${isMe||isLeader?'600':'400'}">${p.name}${isMe?' <span style="color:var(--muted);font-size:12px;">(you)</span>':''}</td>
+      <td style="text-align:right;color:${isLeader?'var(--green-text)':'inherit'};font-weight:${isLeader?'600':'400'}">${p.totalCorrect}</td>
+      <td style="text-align:right;color:var(--muted)">${p.totalEntries}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+  c.innerHTML = html;
+}
+
+function renderLeadersTab(c, week) {
+  if (!week) { c.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><p>No week open yet.</p></div>'; return; }
+  const entries = week.entries ? Object.values(week.entries) : [];
+  if (!entries.length) { c.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><p>No entries yet.<br>Be the first to pick!</p></div>'; return; }
+  const tp = totalPot(week);
+
+  const games = week.games ? Object.values(week.games) : [];
+
+  // Deduplicate by userId first, then by name as fallback
+  // (catches duplicate accounts created with same name during testing)
+  const byUser = {};
+  entries.forEach(e => {
+    const uid = e.userId;
+    if (!byUser[uid]) { byUser[uid] = e; return; }
+    const existing = byUser[uid];
+    if (existing.lateJoin && !e.lateJoin) { byUser[uid] = e; return; }
+    if (!existing.lateJoin && e.lateJoin) return;
+    if (Object.keys(e.picks||{}).length > Object.keys(existing.picks||{}).length) byUser[uid] = e;
+  });
+  // Secondary dedup by name — keep entry with most picks
+  const byName = {};
+  Object.values(byUser).forEach(e => {
+    const key = (e.name || '').toLowerCase().trim();
+    if (!byName[key]) { byName[key] = e; return; }
+    const existing = byName[key];
+    if (existing.lateJoin && !e.lateJoin) { byName[key] = e; return; }
+    if (!existing.lateJoin && e.lateJoin) return;
+    if (Object.keys(e.picks||{}).length > Object.keys(existing.picks||{}).length) byName[key] = e;
+  });
+  const deduped = Object.values(byName);
+  const sorted = [...deduped].sort((a,b) => (b.correct??-1) - (a.correct??-1));
+  const playerCount = deduped.length;
+
+  let html = `<div class="pot-display">
+    <div class="pot-amount">$${tp}</div>
+    <div class="pot-label">Week ${week.num} pot · ${playerCount} player${playerCount!==1?'s':''}</div>
+  </div>`;
+
+  if (week.settled && week.winners?.length) {
+    html += `<div class="banner banner-green">🏆 ${week.winners.join(', ')} won $${tp}!</div>`;
+  } else if (week.settled) {
+    html += `<div class="banner banner-amber">No winner — pot carries over.</div>`;
+  }
+
+  const isPlay = isPlayoff(week);
+  const playoffSorted = isPlay ? playoffStandings() : null;
+  const displayList = isPlay ? playoffSorted : sorted;
+
+  html += `<div class="card"><table class="lb-table"><thead><tr>
+    <th class="rank">#</th><th>Name</th>
+    <th style="text-align:right">${isPlay ? 'Total pts' : week.settled ? 'Score' : 'Picks'}</th>
+    ${isPlay ? '<th style="text-align:right">This round</th>' : ''}
+  </tr></thead><tbody>`;
+
+  displayList.forEach((item, i) => {
+    const isMe = item.userId === currentUser.id;
+    const e = isPlay ? null : item;
+    const rank = i === 0 ? '<span class="rank gold">🥇</span>' : `<span class="rank">${i+1}</span>`;
+    let score, thisRound = '';
+    if (isPlay) {
+      const cumulPts = item.pts;
+      score = `<span class="pill ${i===0&&cumulPts>0?'pill-green':'pill-gray'}">${cumulPts} pts</span>`;
+      // This round's pts
+      const myRoundEntry = week.entries ? Object.values(week.entries).find(en => en.userId === item.userId) : null;
+      const roundPts = playoffPts(myRoundEntry, games);
+      thisRound = `<td style="text-align:right;color:var(--muted);font-size:12px;">${week.settled?roundPts+' pts':'—'}</td>`;
+    } else {
+      score = week.settled
+        ? `<span class="pill ${e.correct===games.length?'pill-green':e.correct>=4?'pill-amber':'pill-red'}">${e.correct||0}/${games.length}</span>`
+        : `<span class="pill pill-blue">Submitted</span>`;
+    }
+    const lateTag = (!isPlay && e?.lateJoin) ? ' <span style="font-size:10px;color:var(--amber-text);background:var(--amber-bg);border-radius:4px;padding:1px 5px;">late</span>' : '';
+    const name = isPlay ? item.name : e.name;
+    html += `<tr class="${isMe?'me':''}"><td>${rank}</td><td>${name}${lateTag}${isMe?' <span style="color:var(--muted);font-size:12px;">(you)</span>':''}</td><td style="text-align:right">${score}</td>${thisRound}</tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+  c.innerHTML = html;
+}
+
+function renderHistoryTab(c) {
+  const allWeeks = getWeeks();
+  const myWeeks = Object.values(allWeeks).filter(w => w.settled && w.entries && Object.values(w.entries).find(e => e.userId === currentUser.id));
+
+  if (!myWeeks.length) {
+    c.innerHTML = `<div class="empty"><div class="empty-icon">📅</div><p>No settled weeks with your entries yet.</p></div>`;
+    return;
+  }
+
+  const user = getUser(currentUser.id) || {};
+  let totalCorrect = 0, totalPossible = 0;
+  myWeeks.forEach(w => {
+    const e = Object.values(w.entries).find(e => e.userId === currentUser.id);
+    if (e) { totalCorrect += e.correct||0; totalPossible += (w.games?Object.keys(w.games).length:6); }
+  });
+
+  let html = `<div class="metrics">
+    <div class="metric"><div class="metric-val gold">${myWeeks.length}</div><div class="metric-label">Weeks played</div></div>
+    <div class="metric"><div class="metric-val green">${totalCorrect}</div><div class="metric-label">Total correct</div></div>
+    <div class="metric"><div class="metric-val">${totalPossible?Math.round(totalCorrect/totalPossible*100):0}%</div><div class="metric-label">Accuracy</div></div>
+  </div>`;
+
+  [...myWeeks].reverse().forEach((w, idx) => {
+    const e = Object.values(w.entries).find(e => e.userId === currentUser.id);
+    const games = w.games ? Object.values(w.games).sort((a,b) => (a.id||'').localeCompare(b.id||'')) : [];
+    const gameCount = games.length || 6;
+    const won = w.winners?.includes(currentUser.name);
+    const tp = totalPot(w);
+    const detailId = 'hist-detail-' + w.num;
+
+    // Build picks detail rows
+    const pickRows = games.map(g => {
+      const myPick = e?.picks?.[g.id];
+      const correct = myPick && g.winner && myPick === g.winner;
+      const wrong   = myPick && g.winner && myPick !== g.winner;
+      const pickColor = correct ? 'var(--green-text)' : wrong ? 'var(--red-text)' : 'var(--muted)';
+      const icon = correct ? '✓' : wrong ? '✗' : '–';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px;">
+        <span style="color:var(--muted);">${g.away} @ ${g.home}</span>
+        <span style="color:${pickColor};font-weight:500;">${icon} ${myPick || 'No pick'}</span>
+      </div>`;
+    }).join('');
+
+    html += `<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
+      <span id="${detailId}-chevron" onclick="toggleHistDetail('${detailId}')" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;flex-shrink:0;cursor:pointer;align-self:flex-start;margin-top:14px;transition:transform .2s;transform-origin:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      <div style="flex:1;min-width:0;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;" onclick="toggleHistDetail('${detailId}')">
+          <div>
+            <div style="font-size:14px;font-weight:600;">${w.playoff ? (w.playoffLabel||'Playoff') : 'Week '+w.num}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">$${tp} pot · ${Object.values(w.entries).length} entries</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="pill ${won?'pill-green':e?.correct===gameCount?'pill-green':'pill-gray'}">${e?.correct||0}/${gameCount}</span>
+            ${won ? `<div style="font-size:11px;color:var(--gold);margin-top:3px;">Won! 🏆</div>` : ''}
+          </div>
+        </div>
+        <div id="${detailId}" style="display:none;padding:0 14px 12px;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Your picks</div>
+        ${pickRows || '<div style="font-size:12px;color:var(--muted);">No picks recorded.</div>'}
+        ${w.winners?.length ? `<div style="font-size:12px;color:var(--green-text);margin-top:8px;font-weight:500;">🏆 Winner: ${w.winners.join(', ')}</div>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  // Past seasons from archives
+  const archives = liveData.archives || {};
+  const pastSeasons = Object.values(archives).sort((a,b) => (b.archivedAt||0)-(a.archivedAt||0));
+  if (pastSeasons.length) {
+    html += `<div style="margin-top:20px;"><div class="section-head" style="margin-bottom:10px;">Past seasons</div>`;
+    pastSeasons.forEach(arc => {
+      const myArcEntries = Object.values(arc.weeks||{}).filter(w =>
+        w.entries && Object.values(w.entries).find(e => e.userId === currentUser.id)
+      );
+      if (!myArcEntries.length) return;
+      const arcCorrect = myArcEntries.reduce((sum, w) => {
+        const e = Object.values(w.entries).find(e => e.userId === currentUser.id);
+        return sum + (e?.correct || 0);
+      }, 0);
+      const seasonWinner = arc.season?.winners?.includes(currentUser.name);
+      html += `<div class="history-card">
+        <div>
+          <div class="history-week">${arc.label || 'Season '+arc.seasonNum}</div>
+          <div class="history-meta">${myArcEntries.length} weeks played · ${arcCorrect} correct</div>
+          ${seasonWinner ? `<div style="font-size:12px;color:var(--gold);margin-top:2px;">🏆 Most Wins Pot winner!</div>` : ''}
+        </div>
+        <span class="pill ${seasonWinner?'pill-green':'pill-gray'}">${arc.weekCount}wks</span>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  c.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// ADMIN VIEW
+// ══════════════════════════════════════════════════════════════
+let adminTab = 'week';
+
+function renderAdmin() {
+  const week = getWeek(currentWeekId);
+  const weeks = getWeeks();
+  const weekIds = Object.keys(weeks);
+
+  const commEmail = liveData.commissionerEmail || '';
+  document.getElementById('root').innerHTML = `
+  <div class="app">
+    <div class="header">
+      <div class="header-title">🏈 Commissioner</div>
+      <button class="btn-ghost btn-sm" onclick="signOut()">Sign out</button>
+    </div>
+    <div class="content">
+      <div id="admin-content"></div>
+    </div>
+    <nav class="tabs"><div class="tabs-inner" style="--tab-cols:5;">
+      <button class="tab ${adminTab==='week'?'active':''}" onclick="switchAdminTab('week')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Games
+      </button>
+      <button class="tab ${adminTab==='results'?'active':''}" onclick="switchAdminTab('results')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Results
+      </button>
+      <button class="tab ${adminTab==='players'?'active':''}" onclick="switchAdminTab('players')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Players
+      </button>
+      <button class="tab ${adminTab==='history'?'active':''}" onclick="switchAdminTab('history')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>History
+      </button>
+      <button class="tab ${adminTab==='season'?'active':''}" onclick="switchAdminTab('season')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Season
+      </button>
+    </div></nav>
+  </div>`;
+  renderAdminContent();
+}
+
+window.switchAdminTab = function(tab) { adminTab = tab; renderAdmin(); };
+
+function renderAdminContent() {
+  const c = document.getElementById('admin-content');
+  if (!c) return;
+  if (adminTab === 'week') renderAdminWeek(c);
+  else if (adminTab === 'results') renderAdminResults(c);
+  else if (adminTab === 'players') renderAdminPlayers(c);
+  else if (adminTab === 'history') renderAdminHistory(c);
+  else renderAdminSeason(c);
+}
+
+function renderAdminWeek(c) {
+  const weeks = getWeeks();
+  const weekIds = Object.keys(weeks);
+  const week = getWeek(currentWeekId);
+  const games = week ? (week.games ? Object.values(week.games) : []) : [];
+
+  let html = `<div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
+    <select style="flex:1;" onchange="switchWeek(this.value)">
+      ${weekIds.map(id => `<option value="${id}" ${id===currentWeekId?'selected':''}>${weeks[id].playoff?'🏆 ':''}Week ${weeks[id].num}${weeks[id].superBowl?' (Super Bowl)':weeks[id].playoff?' ('+weeks[id].playoffLabel+')':''}${weeks[id].settled?' ✓':''}</option>`).join('')}
+      ${!weekIds.length ? '<option value="">No weeks yet</option>' : ''}
+    </select>
+    <button class="btn btn-primary btn-sm" onclick="addWeek()">+ New week</button>
+    <button class="btn btn-sm" style="border-color:var(--gold);color:var(--gold);" onclick="addPlayoffWeek()">+ Playoff week</button>
+  </div>`;
+
+  if (!week) {
+    html += `<div class="empty"><div class="empty-icon">📅</div><p>Create your first week to get started.</p></div>`;
+    c.innerHTML = html; return;
+  }
+
+  const tp = totalPot(week);
+  const entries = week.entries ? Object.values(week.entries) : [];
+  const carryover = week.carryover || 0;
+
+  if (carryover > 0) {
+    html += `<div class="banner banner-amber">💰 $${carryover} carrying over from previous week(s)</div>`;
+  }
+
+  const commEmail = liveData.commissionerEmail || '';
+  html += `<div style="display:flex;gap:10px;margin-bottom:12px;">
+    <div class="metric" style="flex:1;"><div class="metric-val gold">$${tp}</div><div class="metric-label">Current pot</div></div>
+    <div class="metric" style="flex:1;"><div class="metric-val">${entries.length}</div><div class="metric-label">Entries</div></div>
+  </div>
+  <div class="input-group" style="margin-bottom:14px;">
+    <label>Your (commissioner) email — used as From address</label>
+    <div style="display:flex;gap:8px;">
+      <input id="comm-email" type="email" value="${commEmail}" placeholder="yourname@gmail.com" style="flex:1;"/>
+      <button class="btn btn-sm btn-secondary" onclick="saveCommEmail()">Save</button>
+    </div>
+  </div>
+  <div style="background:var(--bg3);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
+    <div class="section-head" style="margin-bottom:10px;">Change admin password</div>
+    <div class="input-group"><label>New password</label><input id="new-admin-pin" type="password" maxlength="20" placeholder="New password"/></div>
+    <div class="input-group"><label>Confirm new password</label><input id="confirm-admin-pin" type="password" maxlength="20" placeholder="Confirm password"/></div>
+    <button class="btn btn-secondary" onclick="setAdminPin()">Update admin password</button>
+  </div>`;
+
+  html += `<div class="section-head">Week ${week.num} matchups</div>
+  <div id="game-editor">`;
+  games.forEach((g, i) => {
+    let koDate = '', koTime = '';
+    if (g.kickoff) {
+      const d = new Date(g.kickoff);
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hour12: false
+      }).formatToParts(d);
+      const get = type => parts.find(p => p.type === type)?.value || '';
+      koDate = `${get('year')}-${get('month')}-${get('day')}`;
+      koTime = `${get('hour')}:${get('minute')}`;
+    }
+    html += `<div class="game-row">
+      <input value="${g.away||''}" placeholder="Away team" id="ge-away-${i}" ${week.settled?'disabled':''}/>
+      <span class="vs">vs</span>
+      <input value="${g.home||''}" placeholder="Home team" id="ge-home-${i}" ${week.settled?'disabled':''}/>
+      <button class="icon-btn" onclick="removeGame('${g.id}')" ${week.settled?'disabled':''} title="Remove">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;">
+      <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;">Kickoff date</label>
+        <input type="date" value="${koDate}" id="ge-date-${i}" ${week.settled?'disabled':''}/>
+      </div>
+      <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;">Kickoff time (Eastern)</label>
+        <input type="time" value="${koTime}" id="ge-time-${i}" ${week.settled?'disabled':''}/>
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  if (!week.settled) {
+    html += `<div style="display:flex;gap:8px;margin-top:4px;">
+      <button class="btn btn-secondary" style="flex:1;" onclick="addGame()">+ Add game</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveGames()">Save games</button>
+    </div>
+    <button class="btn" style="width:100%;margin-top:8px;border-color:var(--gold);color:var(--gold);" onclick="autoPickGames()">
+      🎯 Auto-pick 6 tightest spreads (no Thursday games)
+    </button>
+    <button class="btn" style="width:100%;margin-top:8px;border-color:var(--blue-text);color:var(--blue-text);" onclick="emailPlayers()">
+      ✉️ Email players this week's games
+    </button>
+    <button class="btn" style="width:100%;margin-top:8px;border-color:var(--green-text);color:var(--green-text);" onclick="downloadGamesPDF()">
+      📄 Download this week's games as PDF
+    </button>`;
+  }
+  c.innerHTML = html;
+}
+
+window.saveCommEmail = async function() {
+  const email = document.getElementById('comm-email')?.value.trim();
+  if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { toast('Enter a valid email.'); return; }
+  await dbSet('/commissionerEmail', email);
+  toast('Commissioner email saved ✓');
+};
+
+window.downloadGamesPDF = function() {
+  var week = getWeek(currentWeekId);
+  if (!week) { toast('No week set up yet.'); return; }
+  var games = week.games ? Object.values(week.games) : [];
+  if (!games.length) { toast('No games set up yet.'); return; }
+  var weekLabel = week.playoff ? (week.playoffLabel || 'Playoff') : ('Week ' + week.num);
+  var appName = 'Tri Boro Pick 6 Pool';
+  var gameRows = games.map(function(g, i) {
+    var kickoffStr = g.kickoff ? fmtKickoff(g.kickoff) : 'Kickoff TBD';
+    return '<tr style="border-bottom:1px solid #eee;">'
+      + '<td style="padding:8px 10px;font-size:13px;color:#666;">' + (i+1) + '</td>'
+      + '<td style="padding:8px 10px;font-weight:600;font-size:14px;">' + (g.away||'TBD') + ' @ ' + (g.home||'TBD') + '</td>'
+      + '<td style="padding:8px 10px;font-size:13px;color:#555;">' + kickoffStr + '</td>'
+      + '</tr>';
+  }).join('');
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    + '<title>' + appName + ' - ' + weekLabel + '</title>'
+    + '<style>body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;max-width:500px;margin:0 auto;padding:24px;color:#1a1a1a;}'
+    + 'h1{font-size:20px;margin:0 0 4px;}h2{font-size:15px;color:#555;margin:0 0 20px;font-weight:400;}'
+    + 'table{width:100%;border-collapse:collapse;}'
+    + 'th{text-align:left;padding:8px 10px;background:#f5f5f5;border-bottom:2px solid #ddd;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:.5px;}'
+    + '.footer{margin-top:24px;font-size:12px;color:#999;text-align:center;border-top:1px solid #eee;padding-top:12px;}'
+    + '</style></head><body>'
+    + '<h1>' + appName + '</h1>'
+    + '<h2>' + weekLabel + ' - Pick your winners!</h2>'
+    + '<table><thead><tr><th>#</th><th>Matchup</th><th>Kickoff (ET)</th></tr></thead>'
+    + '<tbody>' + gameRows + '</tbody></table>'
+    + '<div class="footer">Pick all 6 winners before kickoff</div>'
+    + '</body></html>';
+  var blob = new Blob([html], { type: 'text/html' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = appName.replace(/ /g,'-') + '-' + weekLabel.replace(/ /g,'-') + '-Games.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+  toast('Downloaded - open the file to view or share', 3000);
+};
+
+window.emailPlayers = function() {
+  const week = getWeek(currentWeekId);
+  if (!week) { toast('No week selected.'); return; }
+
+  const games = week.games ? Object.values(week.games) : [];
+  const commEmail = liveData.commissionerEmail || '';
+  const weekLabel = week.playoff ? (week.playoffLabel || 'Playoff') : ('Week ' + week.num);
+  const appName = 'Tri Boro Pick 6 Pool';
+
+  const users = getUsers();
+  const playerEmails = Object.values(users)
+    .filter(function(u) { return !u.isAdmin && u.email; })
+    .map(function(u) { return u.email; });
+
+  if (!playerEmails.length) { toast('No player emails on file yet.'); return; }
+
+  const nl = '%0A';
+  const lines = [];
+  lines.push('The games are set for ' + weekLabel + ' of the ' + appName + '!');
+  lines.push('');
+  if (week.playoff) {
+    lines.push('PLAYOFF ROUND — Pick winner with spread + over/under (1pt each)');
+    lines.push('');
+  }
+  games.forEach(function(g, i) {
+    var away = (g.away || 'TBD');
+    var home = (g.home || 'TBD');
+    var time = g.kickoff ? ('  (' + fmtKickoff(g.kickoff) + ')') : '';
+    var spread = (week.playoff && g.spread) ? ('  Spread: ' + g.spread) : '';
+    var ou = (week.playoff && g.ou) ? ('  O/U: ' + g.ou) : '';
+    lines.push((i + 1) + '. ' + away + ' @ ' + home + time + spread + ou);
+  });
+  lines.push('');
+  lines.push('Log in and submit your picks before kickoff!');
+
+  var subject = encodeURIComponent(appName + ' - ' + weekLabel);
+  var body = encodeURIComponent(lines.join(String.fromCharCode(10)));
+  // Gmail compose URL — opens directly in browser, no default mail app needed
+  var mailtoUrl = 'mailto:' + playerEmails.join(',') + '?subject=' + subject + '&body=' + body;
+  var link = document.createElement('a');
+  link.href = mailtoUrl;
+  link.click();
+  toast('Opening email to ' + playerEmails.length + ' player' + (playerEmails.length > 1 ? 's' : '') + '...', 3000);
+};
+
+window.switchWeek = function(id) { currentWeekId = id; renderAdmin(); };
+
+window.addWeek = async function() {
+  const weeks = getWeeks();
+  const ids = Object.keys(weeks);
+  // Carry over the winnable pot from every settled week with no winner.
+  // totalPot() already subtracts the $10 season skim, so the correct
+  // amount rolls forward — not the raw entry fees.
+  // Weeks where someone won start fresh (carryover = 0).
+  let carryover = 0;
+  // Find the last week that had a winner (or start of pool if none)
+  // and sum totalPot() for every no-winner week after that.
+  let foundWinner = false;
+  const settledChron = ids
+    .map(id => weeks[id])
+    .filter(w => w.settled)
+    .sort((a, b) => a.num - b.num);
+
+  // Walk backwards: once we hit a week with a winner, stop accumulating.
+  // Use stored winnablePot if available (set at settle time), else recalculate.
+  for (let i = settledChron.length - 1; i >= 0; i--) {
+    const w = settledChron[i];
+    if (w.winners && w.winners.length) break;
+    carryover += (w.winnablePot !== undefined) ? w.winnablePot : totalPot(w);
+  }
+
+  const num = ids.length + 1;
+  const newRef = await dbPush('/weeks', {
+    num,
+    carryover,
+    settled: false,
+    winners: null,
+    createdAt: serverTimestamp(),
+    games: {
+      g1: { id:'g1', away:'Kansas City Chiefs', home:'Baltimore Ravens', kickoff:null, winner:null },
+      g2: { id:'g2', away:'Philadelphia Eagles', home:'Dallas Cowboys', kickoff:null, winner:null },
+      g3: { id:'g3', away:'San Francisco 49ers', home:'Los Angeles Rams', kickoff:null, winner:null },
+      g4: { id:'g4', away:'Buffalo Bills', home:'Miami Dolphins', kickoff:null, winner:null },
+      g5: { id:'g5', away:'Green Bay Packers', home:'Chicago Bears', kickoff:null, winner:null },
+      g6: { id:'g6', away:'Pittsburgh Steelers', home:'Cleveland Browns', kickoff:null, winner:null },
+    }
+  });
+  currentWeekId = newRef.key;
+  toast(`Week ${num} created!`);
+};
+
+window.addPlayoffWeek = async function() {
+  const weeks = getWeeks();
+  const ids = Object.keys(weeks);
+  const num = ids.length + 1;
+  const existingPlayoff = Object.values(weeks).filter(w => isPlayoff(w));
+  const roundNames = ['Wild Card', 'Divisional Round', 'Conference Championship', 'Super Bowl'];
+  const label = roundNames[existingPlayoff.length] || `Playoff Round ${existingPlayoff.length+1}`;
+  const isSB = label === 'Super Bowl';
+  const gamesDefault = {};
+  const gCount = isSB ? 1 : existingPlayoff.length === 0 ? 6 : existingPlayoff.length === 1 ? 4 : 2;
+  for (let i = 1; i <= gCount; i++) {
+    gamesDefault[`g${i}`] = { id:`g${i}`, away:'', home:'', kickoff:null, spread:null, ou:null, winner:null };
+  }
+
+  // Only carry over on the first playoff week (Wild Card).
+  // Sum the winnable pot from all regular season no-winner weeks since the last winner.
+  let carryover = 0;
+  if (existingPlayoff.length === 0) {
+    const regularWeeks = Object.values(weeks)
+      .filter(w => !isPlayoff(w) && w.settled)
+      .sort((a, b) => a.num - b.num);
+    for (let i = regularWeeks.length - 1; i >= 0; i--) {
+      const w = regularWeeks[i];
+      if (w.winners && w.winners.length) break; // stop at last winner
+      carryover += totalPot(w);
+    }
+  }
+
+  const newRef = await dbPush('/weeks', {
+    num, playoff: true, superBowl: isSB, playoffLabel: label,
+    carryover, settled: false, winners: null,
+    createdAt: serverTimestamp(),
+    games: gamesDefault
+  });
+  currentWeekId = newRef.key;
+  const carryMsg = carryover > 0 ? ` · $${carryover} carried in from regular season` : '';
+  toast(`${label} week created!${carryMsg}`);
+};
+
+window.autoPickGames = async function() {
+  const week = getWeek(currentWeekId);
+  if (!week || week.settled) return;
+
+  toast('Fetching NFL odds...', 2000);
+
+  let data;
+  try {
+    const url = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/'
+      + '?apiKey=' + ODDS_API_KEY
+      + '&regions=us'
+      + '&markets=spreads'
+      + '&oddsFormat=american'
+      + '&dateFormat=iso';
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('API error ' + res.status);
+    data = await res.json();
+  } catch (e) {
+    toast('Could not fetch odds: ' + e.message, 4000);
+    return;
+  }
+
+  if (!data || !data.length) {
+    toast('No NFL games found. Check back closer to game week.', 4000);
+    return;
+  }
+
+  // The Odds API returns ALL upcoming games across multiple future weeks,
+  // not just "this week" — so we must narrow to one game window first,
+  // otherwise the same team can legitimately appear twice (once per week)
+  // and get flagged as corrupted data.
+  // Find the earliest kickoff time in the response, then keep only games
+  // within 5 days of it (covers Thu/Sun/Mon of a single NFL week).
+  const allKickoffs = data
+    .map(function(e) { return e.commence_time ? new Date(e.commence_time).getTime() : null; })
+    .filter(Boolean);
+  if (!allKickoffs.length) {
+    toast('No games with scheduled kickoff times found.', 4000);
+    return;
+  }
+  const earliestKickoff = Math.min.apply(null, allKickoffs);
+  const windowMs = 5 * 24 * 60 * 60 * 1000; // 5 days
+  const thisWeekData = data.filter(function(e) {
+    if (!e.commence_time) return false;
+    var t = new Date(e.commence_time).getTime();
+    return (t - earliestKickoff) <= windowMs;
+  });
+
+  if (!thisWeekData.length) {
+    toast('Could not isolate this week\u2019s games from the odds data.', 4000);
+    return;
+  }
+
+  // Extract spread for each game — take the first bookmaker's spread market
+  const gamesWithSpread = thisWeekData.map(function(event) {
+    var bookmaker = event.bookmakers && event.bookmakers[0];
+    var market = bookmaker && bookmaker.markets && bookmaker.markets.find(function(m) { return m.key === 'spreads'; });
+    var outcomes = market && market.outcomes;
+    if (!outcomes || outcomes.length < 2) return null;
+
+    // Validate: outcomes must name the SAME two teams as this event.
+    // The Odds API does not guarantee outcome order matches away/home order,
+    // so match by name rather than trusting position.
+    var awayOutcome = outcomes.find(function(o) { return o.name === event.away_team; });
+    var homeOutcome = outcomes.find(function(o) { return o.name === event.home_team; });
+    if (!awayOutcome || !homeOutcome) {
+      console.warn('Skipping game — outcome team names do not match event teams:', event.away_team, 'vs', event.home_team, outcomes);
+      return null;
+    }
+
+    var spread = Math.abs(parseFloat(homeOutcome.point));
+    return {
+      away: event.away_team,
+      home: event.home_team,
+      kickoff: event.commence_time,  // ISO string, UTC
+      spread: spread,
+      spreadLine: homeOutcome.point  // spread relative to the home team
+    };
+  }).filter(Boolean);
+
+  // Safety check: flag if any team name appears in more than one game
+  // within this same narrowed week window (true sign of corrupted data,
+  // since a team can't legitimately play twice in one week)
+  const teamCounts = {};
+  gamesWithSpread.forEach(function(g) {
+    teamCounts[g.away] = (teamCounts[g.away] || 0) + 1;
+    teamCounts[g.home] = (teamCounts[g.home] || 0) + 1;
+  });
+  const duplicatedTeams = Object.keys(teamCounts).filter(function(t) { return teamCounts[t] > 1; });
+  if (duplicatedTeams.length) {
+    toast('Odds data looks corrupted — ' + duplicatedTeams.join(', ') + ' appear in multiple games this week. Try again or enter games manually.', 6000);
+    console.error('Duplicate teams across games:', duplicatedTeams, gamesWithSpread);
+    return;
+  }
+
+  if (!gamesWithSpread.length) {
+    toast('No spread data available yet for this week.', 4000);
+    return;
+  }
+
+  // Exclude Thursday games (day 4 = Thursday in JS Date, 0=Sun 1=Mon ... 4=Thu)
+  const nonThursday = gamesWithSpread.filter(function(g) {
+    if (!g.kickoff) return true;
+    var day = new Date(g.kickoff).getDay();
+    return day !== 4;
+  });
+
+  if (!nonThursday.length) {
+    toast('No non-Thursday games found with spread data yet.', 4000);
+    return;
+  }
+
+  // Sort by tightest spread (closest to 0) and take top 6
+  nonThursday.sort(function(a, b) { return a.spread - b.spread; });
+  const top6 = nonThursday.slice(0, 6);
+
+  // Build new games object
+  const newGames = {};
+  top6.forEach(function(g, i) {
+    var gid = 'g' + (i + 1);
+    // Format spread: favorite has negative spread
+    var spreadStr = g.spreadLine > 0 ? '+' + g.spreadLine : '' + g.spreadLine;
+    newGames[gid] = {
+      id: gid,
+      away: g.away,
+      home: g.home,
+      kickoff: g.kickoff || null,  // already a correct UTC ISO string from the Odds API — keep as-is
+      spread: spreadStr,
+      ou: null,
+      winner: null
+    };
+  });
+
+  try {
+    // Clear existing games first (separate call — can't mix parent-null with
+    // child writes in the same multi-path update, Firebase rejects that)
+    await dbSet(`/weeks/${currentWeekId}/games`, null);
+    // Then write the new games
+    await dbSet(`/weeks/${currentWeekId}/games`, newGames);
+    toast('Auto-picked ' + top6.length + ' games with tightest spreads ✓', 3000);
+  } catch (e) {
+    toast('Could not save games: ' + e.message, 5000);
+    console.error('autoPickGames save error:', e);
+  }
+};
+
+window.addGame = async function() {
+  const week = getWeek(currentWeekId);
+  if (!week || week.settled) return;
+  const newRef = await dbPush(`/weeks/${currentWeekId}/games`, { away:'', home:'', kickoff:null, winner:null });
+  await dbUpdate(`/weeks/${currentWeekId}/games/${newRef.key}`, { id: newRef.key });
+  toast('Game added.');
+};
+
+window.removeGame = async function(gid) {
+  if (!confirm('Remove this game?')) return;
+  await dbSet(`/weeks/${currentWeekId}/games/${gid}`, null);
+  toast('Game removed.');
+};
+
+window.saveGames = async function() {
+  const week = getWeek(currentWeekId);
+  if (!week) return;
+  const games = week.games ? Object.values(week.games) : [];
+  const updates = {};
+  games.forEach((g, i) => {
+    const away = document.getElementById(`ge-away-${i}`)?.value.trim() || g.away;
+    const home = document.getElementById(`ge-home-${i}`)?.value.trim() || g.home;
+    const date = document.getElementById(`ge-date-${i}`)?.value;
+    const time = document.getElementById(`ge-time-${i}`)?.value;
+    const kickoff = (date && time) ? easternInputToUTC(date, time) : (g.kickoff || null);
+    updates[`/weeks/${currentWeekId}/games/${g.id}/away`] = away;
+    updates[`/weeks/${currentWeekId}/games/${g.id}/home`] = home;
+    updates[`/weeks/${currentWeekId}/games/${g.id}/kickoff`] = kickoff;
+    if (isPlayoff(week)) {
+      const spread = document.getElementById(`ge-spread-${i}`)?.value.trim();
+      const ou = document.getElementById(`ge-ou-${i}`)?.value.trim();
+      updates[`/weeks/${currentWeekId}/games/${g.id}/spread`] = spread || null;
+      updates[`/weeks/${currentWeekId}/games/${g.id}/ou`] = ou ? parseFloat(ou) : null;
+    }
+  });
+  await update(ref(db, '/'), updates);
+  toast('Games saved ✓');
+};
+
+// ══════════════════════════════════════════════════════════════
+// ESPN AUTO-SCORE ENGINE
+// ══════════════════════════════════════════════════════════════
+
+// Normalise a team name so ESPN names match what the admin typed.
+// Strips city/state prefix, lowercases, trims. "Kansas City Chiefs" → "chiefs"
+function teamSlug(name) {
+  if (!name) return '';
+  return name.trim().toLowerCase().split(' ').pop();
+}
+
+// Pull the current NFL scoreboard from ESPN's free public API (no key needed).
+// Returns array of { awayName, homeName, awayScore, homeScore, status, winner }
+// status: 'pre' | 'in' | 'post'
+// winner: full team name string if status==='post', else null
+async function fetchESPNScores() {
+  const url = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('ESPN fetch failed');
+  const data = await res.json();
+  return (data.events || []).map(event => {
+    const comp = event.competitions[0];
+    const status = comp.status.type.name; // 'STATUS_SCHEDULED' | 'STATUS_IN_PROGRESS' | 'STATUS_FINAL' etc.
+    const competitors = comp.competitors;  // ESPN: index 0 = home, index 1 = away
+    const home = competitors.find(c => c.homeAway === 'home');
+    const away = competitors.find(c => c.homeAway === 'away');
+    const isFinal = status === 'STATUS_FINAL' || status === 'STATUS_FINAL_OVERTIME';
+    const isLive  = status === 'STATUS_IN_PROGRESS' || status === 'STATUS_HALFTIME';
+    let winner = null;
+    if (isFinal) {
+      winner = home.winner ? home.team.displayName : away.team.displayName;
+    }
+    return {
+      awayName:  away.team.displayName,
+      homeName:  home.team.displayName,
+      awayScore: away.score || '0',
+      homeScore: home.score || '0',
+      status:    isFinal ? 'post' : isLive ? 'in' : 'pre',
+      statusDetail: comp.status.type.shortDetail || '',
+      winner,
+    };
+  });
+}
+
+// Match an ESPN game result to one of our pool games by team name slug.
+function matchESPNGame(poolGame, espnGames) {
+  const awaySlug = teamSlug(poolGame.away);
+  const homeSlug = teamSlug(poolGame.home);
+  return espnGames.find(eg =>
+    teamSlug(eg.awayName) === awaySlug && teamSlug(eg.homeName) === homeSlug
+  ) || null;
+}
+
+// Core settle logic — shared between auto and manual paths.
+async function doSettleWeek(weekId) {
+  const week = (liveData.weeks || {})[weekId];
+  if (!week || week.settled) return;
+  const games = week.games ? Object.values(week.games) : [];
+  if (!games.every(g => g.winner)) return;
+
+  const entries = week.entries ? Object.entries(week.entries) : [];
+  const userUpdates = {};
+
+  if (isPlayoff(week)) {
+    // Playoff: score each entry for winner + O/U (up to 2pts/game)
+    for (const [entryKey, e] of entries) {
+      const pts = playoffPts(e, games);
+      userUpdates[`/weeks/${weekId}/entries/${entryKey}/playoffPts`] = pts;
+    }
+    userUpdates[`/weeks/${weekId}/settled`] = true;
+    userUpdates[`/weeks/${weekId}/winners`] = null; // determined by payoutPlayoff()
+    await update(ref(db, '/'), userUpdates);
+    toast(`Playoff round scored! Check the leaderboard for standings.`);
+  } else {
+    // Regular season: all 6 correct wins the pot
+    const poolWinners = [];
+    for (const [entryKey, e] of entries) {
+      let correct = 0;
+      games.forEach(g => { if (e.picks && e.picks[g.id] === g.winner) correct++; });
+      if (correct === games.length) poolWinners.push(e.name);
+      userUpdates[`/weeks/${weekId}/entries/${entryKey}/correct`] = correct;
+      const userData = getUser(e.userId);
+      if (userData) {
+        userUpdates[`/users/${e.userId}/totalCorrect`] = (userData.totalCorrect || 0) + correct;
+      }
+    }
+    const winnablePot = totalPot(week);
+    userUpdates[`/weeks/${weekId}/settled`] = true;
+    userUpdates[`/weeks/${weekId}/winners`] = poolWinners.length ? poolWinners : null;
+    userUpdates[`/weeks/${weekId}/seasonSkim`] = SEASON_SKIM;
+    userUpdates[`/weeks/${weekId}/winnablePot`] = winnablePot;
+    await update(ref(db, '/'), userUpdates);
+    toast(poolWinners.length ? `🏆 ${poolWinners.join(', ')} won!` : 'All games final — no winner, pot carries over.');
+  }
+}
+
+// Poll ESPN and write any new winners to Firebase. Called on a timer.
+let espnPollTimer = null;
+let lastEspnScores = {}; // gameId -> score string cache for display
+
+async function pollESPN() {
+  const week = getWeek(currentWeekId);
+  if (!week || week.settled) return;
+  const games = week.games ? Object.values(week.games) : [];
+  const unfinished = games.filter(g => !g.winner);
+  if (!unfinished.length) return; // all done
+
+  let espnGames;
+  try {
+    espnGames = await fetchESPNScores();
+  } catch (e) {
+    console.warn('ESPN poll failed:', e.message);
+    return;
+  }
+
+  const updates = {};
+  let anyNew = false;
+
+  games.forEach(g => {
+    if (g.winner) return; // already settled
+    const eg = matchESPNGame(g, espnGames);
+    if (!eg) return;
+    // Cache score for display
+    lastEspnScores[g.id] = { away: eg.awayScore, home: eg.homeScore, status: eg.status, detail: eg.statusDetail };
+    if (eg.status === 'post' && eg.winner) {
+      updates[`/weeks/${currentWeekId}/games/${g.id}/winner`] = eg.winner;
+      anyNew = true;
+    }
+  });
+
+  if (anyNew) {
+    await update(ref(db, '/'), updates);
+    // Check if all games now have winners (after Firebase update propagates via onValue)
+    // settleWeek check happens in the onValue callback via checkAutoSettle()
+  }
+
+  // Re-render results tab if it's visible to update live scores
+  if (adminTab === 'results') renderAdminContent();
+}
+
+async function checkAutoSettle() {
+  const week = getWeek(currentWeekId);
+  if (!week || week.settled) return;
+  const games = week.games ? Object.values(week.games) : [];
+  if (games.length && games.every(g => g.winner)) {
+    await doSettleWeek(currentWeekId);
+  }
+}
+
+function startESPNPolling() {
+  if (espnPollTimer) clearInterval(espnPollTimer);
+  pollESPN(); // immediate first poll
+  espnPollTimer = setInterval(pollESPN, 60000); // then every 60 seconds
+}
+
+function stopESPNPolling() {
+  if (espnPollTimer) { clearInterval(espnPollTimer); espnPollTimer = null; }
+}
+
+// ── Admin Results tab ──────────────────────────────────────────
+function renderAdminResults(c) {
+  const week = getWeek(currentWeekId);
+  if (!week) { c.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><p>No week selected.</p></div>'; return; }
+
+  const games = week.games ? Object.values(week.games) : [];
+  const settled = !!week.settled;
+  const finishedCount = games.filter(g => g.winner).length;
+
+  // ── Pre-kickoff pick status ────────────────────────────────────
+  const allPlayers = Object.entries(getUsers()).filter(([,u]) => !u.isAdmin);
+  const allEntries = week.entries ? Object.values(week.entries) : [];
+  // Deduplicate by name so duplicate test accounts don't cause ghost "no pick" warnings
+  const entryByName = {};
+  allEntries.forEach(e => {
+    const key = (e.name||'').toLowerCase().trim();
+    if (!entryByName[key]) { entryByName[key] = e; return; }
+    if (Object.keys(e.picks||{}).length > Object.keys(entryByName[key].picks||{}).length) entryByName[key] = e;
+  });
+  const entries = Object.values(entryByName);
+
+  // For each game not yet kicked off, find players who haven't picked
+  const preKickoffGames = games.filter(g => !gameKickedOff(g) && !g.winner);
+  const kickedGames     = games.filter(g => gameKickedOff(g) || g.winner);
+
+  // Players who have submitted an entry this week
+  const submittedIds = new Set(entries.map(e => e.userId));
+  const notSubmitted = allPlayers.filter(([id]) => !submittedIds.has(id));
+
+  let html = `<div class="section-head">Scores — week ${week.num}</div>`;
+
+  if (settled) {
+    html += `<div class="banner banner-green">Week ${week.num} settled. ${week.winners?.length ? '🏆 Winner: '+week.winners.join(', ') : 'No winner — pot carries over.'}</div>`;
+  } else {
+    html += `<div class="banner banner-blue" style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:18px;">📡</span>
+      <div><strong>Auto-scoring active</strong> — checking ESPN every 60 seconds.<br>
+      <span style="font-size:12px;font-weight:400;">${finishedCount}/${games.length} games final. Week settles automatically when all are done.</span></div>
+    </div>`;
+  }
+
+  // ── Pick submission status (only show before all games kick off) ──
+  if (!settled && games.some(g => !gameKickedOff(g))) {
+    html += `<div class="card" style="margin-bottom:14px;">
+      <div class="section-head" style="margin-bottom:10px;">Pick submission status</div>`;
+
+    if (notSubmitted.length === 0) {
+      html += `<div style="color:var(--green-text);font-size:13px;font-weight:500;">✓ All ${allPlayers.length} players have submitted picks.</div>`;
+    } else {
+      html += `<div style="font-size:13px;color:var(--muted);margin-bottom:8px);">${submittedIds.size} of ${allPlayers.length} players submitted.</div>`;
+      html += `<div style="font-size:12px;color:var(--amber-text);font-weight:600;margin-bottom:6px;">⚠ Not yet submitted (${notSubmitted.length}):</div>`;
+      html += `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+        ${notSubmitted.map(([,u]) => `<span style="background:var(--amber-bg);color:var(--amber-text);border-radius:4px;padding:3px 8px;font-size:12px;">${u.name}</span>`).join('')}
+      </div>`;
+    }
+
+    // Per-game lock status with who picked what locked-game
+    if (kickedGames.length > 0) {
+      html += `<div style="border-top:0.5px solid var(--border);padding-top:10px;margin-top:6px;">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Locked games — picks confirmed:</div>`;
+      kickedGames.forEach(g => {
+        const pickedAway = entries.filter(e => e.picks && e.picks[g.id] === g.away).map(e => e.name);
+        const pickedHome = entries.filter(e => e.picks && e.picks[g.id] === g.home).map(e => e.name);
+        const noPick = allPlayers.filter(([id]) => !entries.find(e => e.userId === id && e.picks?.[g.id])).map(([,u]) => u.name);
+        html += `<div style="margin-bottom:10px;">
+          <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:5px;">${g.away} @ ${g.home}</div>
+          ${pickedAway.length ? `<div style="font-size:11px;color:var(--muted);margin-bottom:3px;"><span style="color:var(--blue-text);">${g.away}:</span> ${pickedAway.join(', ')}</div>` : ''}
+          ${pickedHome.length ? `<div style="font-size:11px;color:var(--muted);margin-bottom:3px;"><span style="color:var(--blue-text);">${g.home}:</span> ${pickedHome.join(', ')}</div>` : ''}
+          ${noPick.length ? `<div style="font-size:11px;color:var(--red-text);">No pick: ${noPick.join(', ')}</div>` : ''}
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    html += `</div>`;
+  }
+
+  games.forEach(g => {
+    const score = lastEspnScores[g.id];
+    const isFinal = !!g.winner;
+    const isLive  = score?.status === 'in';
+    const isPre   = !score || score.status === 'pre';
+
+    let scoreLine = '';
+    if (isFinal && score) {
+      scoreLine = `<span style="font-size:13px;font-weight:600;color:var(--green-text);">${score.away} – ${score.home} Final</span>`;
+    } else if (isLive && score) {
+      scoreLine = `<span style="font-size:13px;font-weight:600;color:var(--amber-text);">🔴 ${score.away} – ${score.home} <span style="font-weight:400;">${score.detail}</span></span>`;
+    } else if (g.kickoff) {
+      scoreLine = `<span style="font-size:12px;color:var(--muted);">${fmtKickoff(g.kickoff)}</span>`;
+    }
+
+    html += `<div class="winner-row">
+      <div class="winner-row-head">
+        <div class="winner-matchup">${g.away} <span style="color:var(--muted);font-weight:400;">@</span> ${g.home}</div>
+        <span class="pill ${isFinal?'pill-green':isLive?'pill-amber':'pill-gray'}">${isFinal?'Final':isLive?'Live':'Upcoming'}</span>
+      </div>
+      <div style="margin-top:6px;">${scoreLine}</div>
+      ${isFinal ? `<div style="margin-top:6px;font-size:12px;color:var(--green-text);">✓ Winner: ${g.winner}</div>` : ''}
+    </div>`;
+  });
+
+  // Manual override — always visible, before and after settling
+  if (games.length) {
+    html += `<div style="margin-top:16px;">
+      <div class="section-head" style="margin-bottom:10px;">Manual winner override</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">Set or change any winner — scores update automatically.</div>`;
+    games.forEach(g => {
+      html += `<div class="winner-row" style="margin-bottom:8px;">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">${g.away} vs ${g.home}</div>
+        <div class="winner-btns">
+          <button class="winner-pick ${g.winner===g.away?'selected':''}" onclick="manualWinner('${g.id}','away')"><span style="display:block;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:2px;">Away</span>${g.away}</button>
+          <button class="winner-pick ${g.winner===g.home?'selected':''}" onclick="manualWinner('${g.id}','home')"><span style="display:block;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:2px;">Home</span>${g.home}</button>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+    // Settle / playoff payout buttons
+  const isPlay = isPlayoff(week);
+  const allSet = games.every(g => g.winner);
+  if (!settled) {
+    if (isPlay) {
+      html += `<button class="btn btn-primary" style="margin-top:14px;" ${!allSet?'disabled':''} onclick="saveAndSettlePlayoff()">
+        ${allSet ? 'Save scores &amp; settle round' : `Set all ${games.length} winners first`}
+      </button>`;
+    } else {
+      html += `<button class="btn btn-primary" style="margin-top:14px;" ${!allSet?'disabled':''} onclick="settleWeek()">
+        ${allSet ? 'Force settle week' : `Set all ${games.length} winners first`}
+      </button>`;
+    }
+  }
+  if (isPlay && settled && isSuperBowl(week)) {
+    const playoffPaid = !!(liveData.playoffSeason && liveData.playoffSeason.paidOut);
+    if (!playoffPaid) {
+      html += `<button class="btn btn-primary" style="margin-top:10px;background:var(--gold);border-color:var(--gold);color:#000;" onclick="payoutPlayoff()">
+        Pay out playoff pool 🏆
+      </button>`;
+    }
+  }
+
+  // Email results button — show when week is settled
+  if (settled) {
+    html += `<button class="btn" style="width:100%;margin-top:12px;border-color:var(--blue-text);color:var(--blue-text);" onclick="emailResults()">
+      ✉️ Email results to players
+    </button>
+    <button class="btn" style="width:100%;margin-top:8px;border-color:var(--gold);color:var(--gold);" onclick="emailResultsToCommissioner()">
+      ✉️ Email me a copy of these results
+    </button>
+    <button class="btn" style="width:100%;margin-top:8px;border-color:var(--green-text);color:var(--green-text);" onclick="downloadResultsPDF()">
+      📄 Download results as PDF
+    </button>`;
+  }
+
+  c.innerHTML = html;
+}
+
+// Builds the results email subject + body for a settled week.
+// Shared by both the player-facing and commissioner-facing send buttons.
+function buildResultsEmail(week) {
+  const games = week.games ? Object.values(week.games) : [];
+  const entries = week.entries ? Object.values(week.entries) : [];
+  const weekLabel = week.playoff ? (week.playoffLabel || 'Playoff') : ('Week ' + week.num);
+  const appName = 'Tri Boro Pick 6 Pool';
+
+  // Deduplicate entries by name
+  const byName = {};
+  entries.forEach(function(e) {
+    const key = (e.name||'').toLowerCase().trim();
+    if (!byName[key]) { byName[key] = e; return; }
+    if (Object.keys(e.picks||{}).length > Object.keys(byName[key].picks||{}).length) byName[key] = e;
+  });
+  const deduped = Object.values(byName).sort(function(a,b) { return (b.correct||0)-(a.correct||0); });
+
+  const winners = week.winners || [];
+  const tp = totalPot(week);
+
+  const lines = [];
+  lines.push(weekLabel + ' Results — ' + appName);
+  lines.push('');
+
+  lines.push('RESULTS:');
+  games.forEach(function(g) {
+    lines.push((g.winner ? '✓ ' : '  ') + g.away + ' @ ' + g.home + (g.winner ? '  →  ' + g.winner : '  (no result)'));
+  });
+  lines.push('');
+
+  lines.push('SCORES:');
+  deduped.forEach(function(e, i) {
+    var score = (e.correct||0) + '/' + games.length;
+    var wonTag = winners.includes(e.name) ? ' 🏆 WINNER' : '';
+    lines.push((i+1) + '. ' + e.name + '  ' + score + wonTag);
+  });
+  lines.push('');
+
+  if (winners.length) {
+    lines.push('🏆 ' + winners.join(' & ') + ' won $' + tp + '!');
+  } else {
+    lines.push('No winner this week — $' + tp + ' carries over to next week.');
+  }
+
+  return {
+    subject: appName + ' - ' + weekLabel + ' Results',
+    body: lines.join(String.fromCharCode(10))
+  };
+}
+
+window.emailResultsToCommissioner = function() {
+  const week = getWeek(currentWeekId);
+  if (!week || !week.settled) { toast('Settle the week first.'); return; }
+
+  const commEmail = liveData.commissionerEmail || '';
+  if (!commEmail) { toast('Save your commissioner email in the Games tab first.'); return; }
+
+  const built = buildResultsEmail(week);
+  var subject = encodeURIComponent(built.subject + ' (Commissioner copy)');
+  var body = encodeURIComponent(built.body);
+  var mailtoUrl = 'mailto:' + commEmail + '?subject=' + subject + '&body=' + body;
+  var link = document.createElement('a');
+  link.href = mailtoUrl;
+  link.click();
+  toast('Opening email — sending results to yourself...', 3000);
+};
+
+window.emailResults = function() {
+  const week = getWeek(currentWeekId);
+  if (!week || !week.settled) { toast('Settle the week first.'); return; }
+
+  const users = getUsers();
+  const playerEmails = Object.values(users)
+    .filter(function(u) { return !u.isAdmin && u.email; })
+    .map(function(u) { return u.email; });
+
+  if (!playerEmails.length) { toast('No player emails on file yet.'); return; }
+
+  const built = buildResultsEmail(week);
+  var subject = encodeURIComponent(built.subject);
+  var body = encodeURIComponent(built.body);
+  var mailtoUrl = 'mailto:' + playerEmails.join(',') + '?subject=' + subject + '&body=' + body;
+  var link = document.createElement('a');
+  link.href = mailtoUrl;
+  link.click();
+  toast('Opening email with results...', 3000);
+};
+
+window.downloadResultsPDF = function() {
+  var week = getWeek(currentWeekId);
+  if (!week || !week.settled) { toast('Settle the week first.'); return; }
+  var games = week.games ? Object.values(week.games) : [];
+  var entries = week.entries ? Object.values(week.entries) : [];
+  var weekLabel = week.playoff ? (week.playoffLabel || 'Playoff') : ('Week ' + week.num);
+  var appName = 'Tri Boro Pick 6 Pool';
+  var byName = {};
+  entries.forEach(function(e) {
+    var key = (e.name||'').toLowerCase().trim();
+    if (!byName[key]) { byName[key] = e; return; }
+    if (Object.keys(e.picks||{}).length > Object.keys(byName[key].picks||{}).length) byName[key] = e;
+  });
+  var sorted = Object.values(byName).sort(function(a,b) { return (b.correct||0)-(a.correct||0); });
+  var winners = week.winners || [];
+  var tp = totalPot(week);
+  var rows = sorted.map(function(e, i) {
+    var won = winners.includes(e.name);
+    var score = (e.correct||0) + '/' + games.length;
+    var scoreColor = e.correct === games.length ? '#238636' : e.correct >= 4 ? '#9e6a03' : '#da3633';
+    return '<tr style="border-bottom:1px solid #ddd;">'
+      + '<td style="padding:8px 10px;color:#666;">' + (i+1) + '</td>'
+      + '<td style="padding:8px 10px;font-weight:' + (won?'700':'400') + ';">' + e.name + (won?' Trophy':'') + '</td>'
+      + '<td style="padding:8px 10px;text-align:center;font-weight:600;color:' + scoreColor + ';">' + score + '</td>'
+      + '</tr>';
+  }).join('');
+  var gameRows = games.map(function(g) {
+    return '<tr style="border-bottom:1px solid #eee;">'
+      + '<td style="padding:6px 10px;color:#444;">' + (g.away||'') + ' @ ' + (g.home||'') + '</td>'
+      + '<td style="padding:6px 10px;font-weight:600;color:#238636;">' + (g.winner || '-') + '</td>'
+      + '</tr>';
+  }).join('');
+  var potLine = winners.length
+    ? '<p style="color:#238636;font-weight:600;font-size:16px;margin:0;">' + winners.join(' & ') + ' won $' + tp + '!</p>'
+    : '<p style="color:#9e6a03;font-weight:600;font-size:16px;margin:0;">No winner - $' + tp + ' carries over.</p>';
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    + '<title>' + appName + ' - ' + weekLabel + ' Results</title>'
+    + '<style>body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#1a1a1a;}'
+    + 'h1{font-size:22px;margin:0 0 4px;}h2{font-size:16px;color:#555;margin:0 0 20px;font-weight:400;}'
+    + 'table{width:100%;border-collapse:collapse;}th{text-align:left;padding:8px 10px;background:#f5f5f5;border-bottom:2px solid #ddd;font-size:13px;}'
+    + '.section{margin-bottom:24px;}.pot-box{background:#f9f9f9;border:1px solid #ddd;border-radius:8px;padding:16px;margin-bottom:24px;text-align:center;}'
+    + '</style></head><body>'
+    + '<h1>' + appName + '</h1><h2>' + weekLabel + ' Results</h2>'
+    + '<div class="pot-box">' + potLine + '</div>'
+    + '<div class="section"><h3 style="margin:0 0 10px;font-size:14px;color:#555;text-transform:uppercase;letter-spacing:.5px;">Game Results</h3>'
+    + '<table><thead><tr><th>Matchup</th><th>Winner</th></tr></thead><tbody>' + gameRows + '</tbody></table></div>'
+    + '<div class="section"><h3 style="margin:0 0 10px;font-size:14px;color:#555;text-transform:uppercase;letter-spacing:.5px;">Scores</h3>'
+    + '<table><thead><tr><th>#</th><th>Player</th><th style="text-align:center;">Score</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+    + '</body></html>';
+  var blob = new Blob([html], { type: 'text/html' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = appName.replace(/ /g,'-') + '-' + weekLabel.replace(/ /g,'-') + '-Results.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+  toast('Downloaded - open the file to view or share', 3000);
+};
+
+window.manualWinner = async function(gid, side) {
+  const week = getWeek(currentWeekId);
+  if (!week) return;
+  const g = week.games ? Object.values(week.games).find(g => g.id === gid) : null;
+  if (!g) return;
+  const winner = side === 'away' ? g.away : g.home;
+  // Allow changing winner even after settling — re-score entries
+  const updates = {};
+  updates[`/weeks/${currentWeekId}/games/${gid}/winner`] = winner;
+  await update(ref(db, '/'), updates);
+  // If week was settled, re-score all entries with updated winners
+  if (week.settled) {
+    const games = week.games ? Object.values(week.games) : [];
+    // Merge updated winner into local game list for scoring
+    const updatedGames = games.map(g2 => g2.id === gid ? { ...g2, winner } : g2);
+    if (updatedGames.every(g2 => g2.winner)) {
+      const entries = week.entries ? Object.entries(week.entries) : [];
+      const rescoreUpdates = {};
+      const poolWinners = [];
+      for (const [entryKey, e] of entries) {
+        let correct = 0;
+        updatedGames.forEach(g2 => { if (e.picks && e.picks[g2.id] === g2.winner) correct++; });
+        if (correct === updatedGames.length) poolWinners.push(e.name);
+        rescoreUpdates[`/weeks/${currentWeekId}/entries/${entryKey}/correct`] = correct;
+        const userData = getUser(e.userId);
+        if (userData) {
+          // Recalculate total correct across all weeks
+          const allWeeks = getWeeks();
+          let totalCorrect = 0;
+          Object.entries(allWeeks).forEach(([wid, w]) => {
+            if (!w.settled || !w.entries) return;
+            const wGames = w.games ? Object.values(w.games) : [];
+            const wEntry = Object.values(w.entries).find(en => en.userId === e.userId);
+            if (!wEntry) return;
+            const wGamesUpdated = wid === currentWeekId ? updatedGames : wGames;
+            wGamesUpdated.forEach(g2 => { if (wEntry.picks && wEntry.picks[g2.id] === g2.winner) totalCorrect++; });
+          });
+          rescoreUpdates[`/users/${e.userId}/totalCorrect`] = totalCorrect;
+        }
+      }
+      rescoreUpdates[`/weeks/${currentWeekId}/winners`] = poolWinners.length ? poolWinners : null;
+      await update(ref(db, '/'), rescoreUpdates);
+      toast(`✓ ${winner} set — scores updated. ${poolWinners.length ? 'Winner: '+poolWinners.join(', ') : 'No winner.'}`, 3500);
+    } else {
+      toast(`✓ ${winner} set as winner.`);
+    }
+  } else {
+    toast(`✓ ${winner} set as winner.`);
+  }
+};
+
+window.saveAndSettlePlayoff = async function() {
+  const week = getWeek(currentWeekId);
+  if (!week || week.settled) return;
+  const games = week.games ? Object.values(week.games) : [];
+  if (!games.every(g => g.winner)) { toast('Set a winner for every game first.'); return; }
+  // Save final scores for O/U scoring
+  const updates = {};
+  games.forEach(g => {
+    const awayEl = document.getElementById(`fs-away-${g.id}`);
+    const homeEl = document.getElementById(`fs-home-${g.id}`);
+    if (awayEl) updates[`/weeks/${currentWeekId}/games/${g.id}/awayFinalScore`] = parseInt(awayEl.value)||0;
+    if (homeEl) updates[`/weeks/${currentWeekId}/games/${g.id}/homeFinalScore`] = parseInt(homeEl.value)||0;
+  });
+  if (Object.keys(updates).length) await update(ref(db, '/'), updates);
+  await doSettleWeek(currentWeekId);
+};
+
+window.settleWeek = async function() {
+  const week = getWeek(currentWeekId);
+  if (!week || week.settled) return;
+  if (!confirm('Force settle this week now?')) return;
+  await doSettleWeek(currentWeekId);
+};
+
+window.payoutPlayoff = async function() {
+  const playoffPaid = liveData.playoffSeason?.paidOut;
+  if (playoffPaid) { toast('Playoff pool already paid out.'); return; }
+  const standings = playoffStandings();
+  if (!standings.length || standings[0].pts === 0) { toast('No playoff points recorded yet.'); return; }
+  // Find the Super Bowl week for tiebreaker
+  const sbWeek = Object.values(getWeeks()).find(w => isSuperBowl(w) && w.settled);
+  const topPts = standings[0].pts;
+  let leaders = standings.filter(p => p.pts === topPts);
+  // Tiebreaker: closest SB combined score without going over
+  if (leaders.length > 1 && sbWeek) {
+    const sbGames = sbWeek.games ? Object.values(sbWeek.games) : [];
+    const sbGame = sbGames[0];
+    if (sbGame && sbGame.awayFinalScore !== undefined) {
+      const actual = parseInt(sbGame.awayFinalScore||0) + parseInt(sbGame.homeFinalScore||0);
+      // Keep only those who guessed without going over, closest wins
+      const withGuess = leaders.map(p => {
+        const e = sbWeek.entries ? Object.values(sbWeek.entries).find(e => e.userId === p.userId) : null;
+        const guess = e?.tbGuess ? parseInt(e.tbGuess) : null;
+        return { ...p, guess };
+      }).filter(p => p.guess !== null && p.guess <= actual);
+      if (withGuess.length) {
+        const closest = Math.max(...withGuess.map(p => p.guess));
+        leaders = withGuess.filter(p => p.guess === closest);
+      }
+      // If all went over, keep all tied at top
+    }
+  }
+  const playoffPot = Object.values(getWeeks()).filter(w => isPlayoff(w)).reduce((s,w) => {
+    const entries = w.entries ? Object.values(w.entries) : [];
+    return s + entries.length * PLAYOFF_ENTRY;
+  }, 0) / Object.values(getWeeks()).filter(w => isPlayoff(w)).length || 0;
+  // Actually: pot = entries for the playoff pool (all paid $20 once)
+  // Count unique entrants across all playoff weeks
+  const playoffEntrants = new Set();
+  Object.values(getWeeks()).filter(w => isPlayoff(w)).forEach(w => {
+    if (w.entries) Object.values(w.entries).forEach(e => playoffEntrants.add(e.userId));
+  });
+  const pot = playoffEntrants.size * PLAYOFF_ENTRY;
+  const split = Math.floor(pot / leaders.length);
+  const names = leaders.map(p => p.name).join(', ');
+  if (!confirm(`Pay out $${pot} playoff pool to ${names}${leaders.length>1?' ($'+split+' each)':''}?`)) return;
+  await dbSet('/playoffSeason', {
+    paidOut: true, winners: leaders.map(p=>p.name),
+    amount: pot, topPts, paidAt: Date.now()
+  });
+  toast(`🏆 Playoff pool paid to ${names}!`, 4000);
+};
+
+function renderAdminSeason(c) {
+  const weeks = getWeeks();
+  const weekCount = Object.values(weeks).length;
+  const fund = weekCount * SEASON_SKIM;
+  const standings = seasonStandings();
+  const season = liveData.season || {};
+  const paid = !!season.paidOut;
+
+  let html = `<div class="section-head">Most Wins Pot</div>`;
+
+  if (paid) {
+    html += `<div class="banner banner-green">🏆 Most Wins Pot paid out to ${season.winners?.join(', ')} — $${season.amount} total.</div>`;
+  } else {
+    html += `<div class="pot-display" style="margin-bottom:16px;">
+      <div class="pot-amount">$${fund}</div>
+      <div class="pot-label">Most Wins Pot · $${SEASON_SKIM} × ${weekCount} week${weekCount!==1?'s':''}</div>
+      <div class="pot-breakdown">Paid to player with most total correct picks at end of regular season</div>
+    </div>`;
+  }
+
+  html += `<div class="section-head" style="margin-bottom:10px;">Season standings</div>
+  <div class="card"><table class="lb-table"><thead><tr>
+    <th class="rank">#</th><th>Name</th><th style="text-align:right">Correct</th><th style="text-align:right">Entries</th>
+  </tr></thead><tbody>`;
+
+  standings.forEach((p, i) => {
+    const isLeader = i === 0 && p.totalCorrect > 0;
+    html += `<tr>
+      <td>${isLeader ? '<span class="rank gold">🥇</span>' : `<span class="rank">${i+1}</span>`}</td>
+      <td style="font-weight:${isLeader?'600':'400'}">${p.name}</td>
+      <td style="text-align:right;font-weight:${isLeader?'600':'400'};color:${isLeader?'var(--green-text)':'inherit'}">${p.totalCorrect}</td>
+      <td style="text-align:right;color:var(--muted)">${p.totalEntries}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+
+  if (!paid && weekCount > 0) {
+    // Determine current leaders for payout preview
+    const top = standings[0]?.totalCorrect || 0;
+    const leaders = standings.filter(p => p.totalCorrect === top && top > 0);
+    const splitAmt = leaders.length ? Math.floor(fund / leaders.length) : 0;
+    const leaderNames = leaders.map(p => p.name).join(', ');
+    const previewMsg = leaders.length
+      ? `Current leader${leaders.length>1?'s':''}: <strong>${leaderNames}</strong> with ${top} correct — would win $${splitAmt}${leaders.length>1?' each (split)':''}.`
+      : 'No picks recorded yet.';
+
+    html += `<div class="banner banner-amber" style="margin-top:14px;">${previewMsg}</div>
+    <button class="btn btn-primary" style="margin-top:12px;" onclick="payoutSeason()">
+      Pay out Most Wins Pot — $${fund}
+    </button>`;
+  }
+
+  // Archive & danger zone
+  const archives = liveData.archives || {};
+  const archiveList = Object.values(archives).sort((a,b) => (b.archivedAt||0)-(a.archivedAt||0));
+  if (archiveList.length) {
+    html += `<div style="margin-top:20px;">
+      <div class="section-head" style="margin-bottom:10px;">Past seasons</div>`;
+    archiveList.forEach(arc => {
+      const yr = arc.label || ('Season ' + (arc.seasonNum || '?'));
+      html += `<div class="history-card" style="cursor:pointer;" onclick="toggleArchive('${arc.seasonNum}')">
+        <div>
+          <div class="history-week">${yr}</div>
+          <div class="history-meta">${arc.weekCount} weeks · $${arc.totalPaidOut} paid out</div>
+          ${arc.season?.paidOut ? `<div style="font-size:12px;color:var(--green-text);margin-top:2px;">Most Wins Pot: ${arc.season.winners?.join(', ')} won $${arc.season.amount}</div>` : ''}
+        </div>
+        <span class="pill pill-gray">View</span>
+      </div>
+      <div id="arc-detail-${arc.seasonNum}" style="display:none;background:var(--bg3);border-radius:var(--radius);padding:10px;margin-top:-8px;margin-bottom:8px;font-size:12px;color:var(--muted);">
+        ${Object.values(arc.weeks||{}).sort((a,b)=>a.num-b.num).map(w => {
+          const won = w.winners?.length;
+          return `<div style="padding:4px 0;border-bottom:0.5px solid var(--border);">Week ${w.num} · ${won ? '🏆 Won by '+w.winners.join(', ') : 'No winner'}</div>`;
+        }).join('')}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  html += `<div style="margin-top:24px;border-top:1px solid var(--border);padding-top:16px;">
+    <div class="section-head" style="color:var(--red-text);margin-bottom:8px;">End of season</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">Archive saves the full season history before resetting. Use this at the end of every NFL regular season.</div>
+    <button class="btn btn-primary" style="margin-bottom:10px;background:var(--amber);border-color:var(--amber);" onclick="archiveAndReset()">Archive season &amp; reset to Week 1</button>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Saves all weeks, picks, scores, and season results permanently before clearing.</div>
+    <div style="border-top:1px solid var(--border);padding-top:14px;">
+      <div style="font-size:12px;color:var(--red-text);font-weight:600;margin-bottom:6px;">Testing only</div>
+      <button class="btn" style="border-color:var(--red);color:var(--red-text);width:100%;" onclick="resetPool()">Reset without archiving</button>
+    </div>
+  </div>`;
+
+  c.innerHTML = html;
+}
+
+function renderAdminPlayers(c) {
+  const users = Object.values(getUsers()).filter(u => !u.isAdmin);
+  if (!users.length) { c.innerHTML = '<div class="empty"><div class="empty-icon">👥</div><p>No players yet.</p></div>'; return; }
+
+  users.sort((a,b) => (b.totalCorrect||0) - (a.totalCorrect||0));
+
+  let html = `<div class="section-head">All players</div>
+  <div class="card" style="padding:0;overflow:visible;">
+  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+  <table class="lb-table" style="min-width:480px;"><thead><tr>
+    <th style="padding-left:16px;">Name</th><th>Email</th><th>Entries</th><th>Correct</th><th style="padding-right:16px;">Acc.</th>
+  </tr></thead><tbody>`;
+
+  users.forEach(u => {
+    const possible = (u.totalEntries||0) * 6;
+    const pct = possible ? Math.round((u.totalCorrect||0)/possible*100) + '%' : '—';
+    html += `<tr><td style="font-weight:600;padding-left:16px;">${u.name}</td><td style="color:var(--muted);font-size:12px;">${u.email||'—'}</td><td>${u.totalEntries||0}</td><td>${u.totalCorrect||0}</td><td style="padding-right:16px;">${pct}</td></tr>`;
+  });
+
+  html += `</tbody></table></div></div>
+  <div style="font-size:11px;color:var(--dim);text-align:center;margin-top:6px;">← Swipe to see all columns →</div>
+  <button class="btn btn-secondary" style="margin-top:12px;" onclick="emailPasswords()">
+    ✉️ Email everyone their password
+  </button>`;
+  c.innerHTML = html;
+}
+
+window.emailPasswords = function() {
+  const users = Object.values(getUsers()).filter(u => !u.isAdmin && u.email && u.pin);
+  if (!users.length) { toast('No players with email addresses on file.'); return; }
+
+  const appName = 'Tri Boro Pick 6 Pool';
+  const appUrl = window.location.href;
+
+  // Build all mailto links and show them as clickable list so browser doesn't block
+  const container = document.getElementById('admin-content');
+  let html = `<div class="section-head">Player password emails</div>
+  <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">Click each link below to open an individual email for each player. Close and come back for the next one.</div>`;
+
+  users.forEach(function(u) {
+    var subject = encodeURIComponent(appName + ' \u2014 Your sign-in details');
+    var body = encodeURIComponent(
+      'Hi ' + u.name + ',' + String.fromCharCode(10) +
+      String.fromCharCode(10) +
+      'Here are your sign-in details for the ' + appName + ':' + String.fromCharCode(10) +
+      String.fromCharCode(10) +
+      'Name: ' + u.name + String.fromCharCode(10) +
+      'Password: ' + u.pin + String.fromCharCode(10) +
+      String.fromCharCode(10) +
+      'Sign in here: ' + appUrl + String.fromCharCode(10) +
+      String.fromCharCode(10) +
+      'You can change your password anytime from the Profile tab once signed in.'
+    );
+    var mailtoUrl = 'https://mail.google.com/mail/?view=cm&fs=1'
+      + '&to=' + encodeURIComponent(u.email)
+      + '&su=' + subject
+      + '&body=' + body;
+    html += `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:13px;font-weight:600;">${u.name}</div>
+        <div style="font-size:12px;color:var(--muted);">${u.email}</div>
+      </div>
+      <a href="${mailtoUrl}" target="_blank" style="background:var(--accent);color:#fff;padding:7px 14px;border-radius:var(--radius);font-size:13px;font-weight:600;text-decoration:none;">Send</a>
+    </div>`;
+  });
+
+  html += `<button class="btn btn-secondary" style="margin-top:8px;" onclick="switchAdminTab('players')">← Back to Players</button>`;
+  container.innerHTML = html;
+};
+
+function renderAdminHistory(c) {
+  const weeks = getWeeks();
+  const settled = Object.values(weeks).filter(w => w.settled).reverse();
+  if (!settled.length) { c.innerHTML = '<div class="empty"><div class="empty-icon">📅</div><p>No settled weeks yet.</p></div>'; return; }
+
+  let html = `<div class="section-head">Week history</div>`;
+  settled.forEach(w => {
+    const tp = totalPot(w);
+    const entries = w.entries ? Object.values(w.entries) : [];
+    const won = w.winners && w.winners.length;
+    html += `<div class="history-card">
+      <div>
+        <div class="history-week">Week ${w.num}</div>
+        <div class="history-meta">$${tp} pot · ${entries.length} entries</div>
+        ${won ? `<div style="font-size:12px;color:var(--green-text);margin-top:2px;">Won by ${w.winners.join(', ')}</div>` : `<div style="font-size:12px;color:var(--amber-text);margin-top:2px;">No winner — carried over</div>`}
+      </div>
+      <span class="pill ${won?'pill-green':'pill-amber'}">${won?'Paid out':'Carry'}</span>
+    </div>`;
+  });
+  c.innerHTML = html;
+}
+
+// ── Shared ───────────────────────────────────────────────────
+window.payoutSeason = async function() {
+  const weeks = getWeeks();
+  const weekCount = Object.values(weeks).length;
+  const fund = weekCount * SEASON_SKIM;
+  const standings = seasonStandings();
+  if (!standings.length) { toast('No players to pay out.'); return; }
+  const top = standings[0].totalCorrect;
+  if (top === 0) { toast('No picks recorded yet.'); return; }
+  const leaders = standings.filter(p => p.totalCorrect === top);
+  const splitAmt = Math.floor(fund / leaders.length);
+  const names = leaders.map(p => p.name).join(', ');
+  if (!confirm(`Pay out $${fund} Most Wins Pot to ${names}${leaders.length>1?' ('+splitAmt+' each)':''}?`)) return;
+  await dbSet('/season', {
+    paidOut: true,
+    winners: leaders.map(p => p.name),
+    amount: fund,
+    topCorrect: top,
+    paidAt: Date.now()
+  });
+  toast(`🏆 Most Wins Pot paid to ${names}!`, 4000);
+};
+
+window.toggleArchive = function(seasonNum) {
+  const el = document.getElementById('arc-detail-' + seasonNum);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+};
+
+window.archiveAndReset = async function() {
+  const weeks = getWeeks();
+  const weekCount = Object.values(weeks).length;
+  if (weekCount === 0) { toast('No weeks to archive.'); return; }
+
+  const season = liveData.season || {};
+  const archives = liveData.archives || {};
+  const seasonNum = Object.keys(archives).length + 1;
+
+  // Calculate total paid out across all winning weeks
+  const totalPaidOut = Object.values(weeks).reduce((sum, w) => {
+    if (w.winners?.length) return sum + totalPot(w);
+    return sum;
+  }, 0);
+
+  const yr = new Date().getFullYear();
+  const label = `${yr} Season`;
+
+  if (!confirm(`Archive "${label}" and reset to Week 1?\n\n${weekCount} weeks will be saved permanently.\nAll player accounts and passwords are kept.`)) return;
+
+  const updates = {};
+
+  // Write archive snapshot
+  updates[`/archives/season_${seasonNum}`] = {
+    seasonNum,
+    label,
+    archivedAt: Date.now(),
+    weekCount,
+    totalPaidOut,
+    season: season.paidOut ? season : null,
+    weeks: weeks,
+    standings: seasonStandings(),
+  };
+
+  // Reset user stats
+  const users = getUsers();
+  Object.entries(users).forEach(([id, u]) => {
+    if (!u.isAdmin) {
+      updates[`/users/${id}/totalCorrect`] = 0;
+      updates[`/users/${id}/totalEntries`] = 0;
+    }
+  });
+
+  // Wipe active data
+  updates['/weeks'] = null;
+  updates['/season'] = null;
+
+  await update(ref(db, '/'), updates);
+
+  currentWeekId = null;
+  myPicks = {};
+  adminTab = 'week';
+
+  toast(`"${label}" archived ✓ — pool reset to Week 1`, 4000);
+};
+
+window.resetPool = async function() {
+  if (!confirm('Reset the pool to Week 1?\n\nThis will permanently delete all weeks, entries, scores, and the Most Wins Pot.\nPlayer accounts and passwords will be kept.\n\nThis cannot be undone.')) return;
+  if (!confirm('Are you sure? All pick history will be lost.')) return;
+
+  // Reset user stats
+  const users = getUsers();
+  const updates = {};
+  Object.entries(users).forEach(([id, u]) => {
+    if (!u.isAdmin) {
+      updates[`/users/${id}/totalCorrect`] = 0;
+      updates[`/users/${id}/totalEntries`] = 0;
+    }
+  });
+
+  // Wipe weeks and season
+  updates['/weeks'] = null;
+  updates['/season'] = null;
+
+  await update(ref(db, '/'), updates);
+
+  // Reset local state
+  currentWeekId = null;
+  myPicks = {};
+  adminTab = 'week';
+
+  toast('Pool reset to Week 1 ✓', 3000);
+};
+
+window.adminResetPw = async function(userId, name) {
+  const newPw = prompt('Set new password for ' + name + ' (up to 10 characters):');
+  if (newPw === null) return;
+  if (!newPw || newPw.length < 1 || newPw.length > 10) { toast('Password must be between 1 and 10 characters.'); return; }
+  await dbUpdate('/users/' + userId, { pin: newPw });
+  toast(name + "'s password updated ✓");
+};
+
+window.toggleHistDetail = function(id) {
+  const el = document.getElementById(id);
+  const chevron = document.getElementById(id + '-chevron');
+  if (!el) return;
+  const isOpen = el.style.display !== 'none';
+  el.style.display = isOpen ? 'none' : 'block';
+  if (chevron) {
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  }
+};
+
+window.setAdminPin = async function() {
+  const newPin = document.getElementById('new-admin-pin')?.value;
+  const confirmPin = document.getElementById('confirm-admin-pin')?.value;
+  if (!newPin || newPin.length < 4) { toast('Password must be at least 4 characters.'); return; }
+  if (newPin !== confirmPin) { toast('Passwords do not match.'); return; }
+  try {
+    const hashed = await sha256(newPin);
+    await update(ref(db, '/'), { adminPinHash: hashed });
+    document.getElementById('new-admin-pin').value = '';
+    document.getElementById('confirm-admin-pin').value = '';
+    toast('Admin password updated ✓', 3000);
+  } catch(e) {
+    toast('Error updating password: ' + e.message, 5000);
+    console.error(e);
+  }
+};
+
+window.signOut = function() {
+  currentUser = null;
+  myPicks = {};
+  sessionStorage.removeItem('pool_user');
+  localStorage.removeItem('pool_user');
+  renderApp();
+};
+
+// ── Boot ─────────────────────────────────────────────────────
+document.getElementById('root').innerHTML = `<div class="spinner"><span class="spin">⟳</span> Loading...</div>`;
+subscribe();
+</script>
+</body>
+</html>
