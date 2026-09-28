@@ -383,10 +383,10 @@ window.loginSelChange = function() {
       <div class="input-group"><label>Email address</label><input id="new-email" type="email" placeholder="you@example.com"/></div>
       <div class="input-group"><label>Choose a password (up to 10 characters)</label><input id="new-pin" type="password" maxlength="10" placeholder="up to 10 characters"/></div>`;
   } else if (v === '__admin') {
-    el.innerHTML = `<div class="input-group"><label>Admin password</label><input id="pin-input" type="password" maxlength="20" placeholder="Password"/></div>`;
+    el.innerHTML = `<div class="input-group"><label>Admin password</label><div style="position:relative;"><input id="pin-input" type="password" maxlength="20" placeholder="Password" style="padding-right:40px;"/><button type="button" onclick="togglePinVisibility()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;" id="pin-eye">👁</button></div></div>`;
   } else if (v) {
     el.innerHTML = `
-      <div class="input-group"><label>Password</label><input id="pin-input" type="password" maxlength="10" placeholder="Password"/></div>
+      <div class="input-group"><label>Password</label><div style="position:relative;"><input id="pin-input" type="password" maxlength="10" placeholder="Password" style="padding-right:40px;"/><button type="button" onclick="togglePinVisibility()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;" id="pin-eye">👁</button></div></div>
       <div style="text-align:right;margin-top:-6px;margin-bottom:10px;">
         <button class="link-btn" style="font-size:13px;" onclick="showForgotPassword('${v}')">Forgot password?</button>
       </div>`;
@@ -435,7 +435,7 @@ window.doResetPassword = async function(userId) {
   toast('Password reset! Sign in with your new password.', 3000);
 
   const el = document.getElementById('login-extra');
-  if (el) el.innerHTML = '<div class="input-group"><label>Password</label><input id="pin-input" type="password" maxlength="10" placeholder="Password"/></div>'
+  if (el) el.innerHTML = '<div class="input-group"><label>Password</label><div style="position:relative;"><input id="pin-input" type="password" maxlength="10" placeholder="Password" style="padding-right:40px;"/><button type="button" onclick="togglePinVisibility()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;" id="pin-eye">👁</button></div></div>'
       + '<div style="text-align:right;margin-top:-6px;margin-bottom:10px;">'
       + '<button class="link-btn" style="font-size:13px;" onclick="showForgotPassword(\x27' + userId + '\x27)">Forgot password?</button>'
       + '</div>';
@@ -629,17 +629,32 @@ function fmtKickoff(kickoff) {
 // "Active" means at least one other player submitted an entry that week.
 function weeksOwed(userId) {
   const weeks = getWeeks();
+  const user = getUser(userId);
+  // Only backfill weeks that started (had entries submitted) AFTER the user joined.
+  // If the user joined outside an active pool week, don't backfill anything.
+  const userJoinedAt = user?.joinedAt || Date.now();
+
   return Object.values(weeks).filter(w => {
-    if (isPlayoff(w)) return false;           // playoff handled separately
+    if (isPlayoff(w)) return false;
     const entries = w.entries ? Object.values(w.entries) : [];
     const hasOtherEntry = entries.some(e => e.userId !== userId);
     const hasMyEntry = entries.some(e => e.userId === userId);
-    // Only count weeks where at least one OTHER settled week exists before it,
-    // meaning this is genuinely a past week the user missed — not the current one.
-    // Key check: the week must be settled OR its week number is less than current week.
     const currentWeek = getWeek(currentWeekId);
     const isPastWeek = w.settled || (currentWeek && w.num < currentWeek.num);
-    return isPastWeek && hasOtherEntry && !hasMyEntry;
+    if (!isPastWeek || !hasOtherEntry || hasMyEntry) return false;
+
+    // Only count as a missed week if at least one other player submitted
+    // AFTER this user joined — meaning the pool was active when they signed up.
+    const firstOtherEntry = entries
+      .filter(e => e.userId !== userId)
+      .sort((a, b) => (a.submittedAt || 0) - (b.submittedAt || 0))[0];
+
+    // If the earliest entry in this week was submitted BEFORE the user joined,
+    // it means this week was already underway or finished before they signed up.
+    // In that case, don't backfill — they weren't in the pool yet.
+    if (firstOtherEntry && (firstOtherEntry.submittedAt || 0) < userJoinedAt) return false;
+
+    return true;
   });
 }
 
@@ -2980,6 +2995,19 @@ window.setAdminPin = async function() {
   } catch(e) {
     toast('Error updating password: ' + e.message, 5000);
     console.error(e);
+  }
+};
+
+window.togglePinVisibility = function() {
+  const input = document.getElementById('pin-input');
+  const eye = document.getElementById('pin-eye');
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (eye) eye.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    if (eye) eye.textContent = '👁';
   }
 };
 
