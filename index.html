@@ -52,7 +52,7 @@
 
   /* ── Form elements ── */
   label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .5px; }
-  input, select { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: 15px; padding: 10px 12px; outline: none; transition: border-color .15s; -webkit-appearance: none; appearance: none; }
+  input:not([type=checkbox]):not([type=radio]), select { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: 15px; padding: 10px 12px; outline: none; transition: border-color .15s; -webkit-appearance: none; appearance: none; }
   input:focus, select:focus { border-color: var(--blue-text); }
   input::placeholder { color: var(--dim); }
   .input-group { margin-bottom: 14px; }
