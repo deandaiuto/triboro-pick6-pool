@@ -52,8 +52,7 @@
 
   /* ── Form elements ── */
   label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .5px; }
-  input:not([type=checkbox]):not([type=radio]), select { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: 15px; padding: 10px 12px; outline: none; transition: border-color .15s; -webkit-appearance: none; appearance: none; }
-  input[type=checkbox], input[type=radio] { width: auto; accent-color: var(--accent); cursor: pointer; }
+  input, select { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: 15px; padding: 10px 12px; outline: none; transition: border-color .15s; -webkit-appearance: none; appearance: none; }
   input:focus, select:focus { border-color: var(--blue-text); }
   input::placeholder { color: var(--dim); }
   .input-group { margin-bottom: 14px; }
@@ -118,7 +117,7 @@
   .progress-label { font-size: 13px; color: var(--muted); }
 
   /* ── Banners ── */
-  .banner { border-radius: var(--radius); padding: 12px 14px; margin-bottom: 14px; font-size: 14px; font-weight: 500; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; }
+  .banner { border-radius: var(--radius); padding: 12px 14px; margin-bottom: 14px; font-size: 14px; font-weight: 500; }
   .banner-green { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green); }
   .banner-amber { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber); }
   .banner-blue { background: var(--blue-bg); color: var(--blue-text); border: 1px solid var(--blue); }
@@ -178,7 +177,7 @@
   .empty p { font-size: 14px; }
 
   /* ── Toast ── */
-  #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 18px; font-size: 14px; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; white-space: normal; word-wrap: break-word; max-width: 85vw; text-align: center; z-index: 100; }
+  #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 18px; font-size: 14px; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; white-space: nowrap; z-index: 100; }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   /* Admin winner select */
@@ -215,7 +214,7 @@ const firebaseConfig = {
   measurementId: "G-6KLDCV5ZNV"
 };
 
-// Admin PIN stored as SHA-256 hash in Firebase /adminPinHash
+const ADMIN_PIN = '1234';
 const ENTRY_FEE = 5;
 const SEASON_SKIM = 10;    // $10/week skimmed into Most Wins Pot
 const PLAYOFF_ENTRY = 20;  // flat $20 to enter the playoff pool
@@ -225,7 +224,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // ── State ────────────────────────────────────────────────────
-let currentUser = JSON.parse(localStorage.getItem('pool_user') || sessionStorage.getItem('pool_user') || 'null');
+let currentUser = JSON.parse(sessionStorage.getItem('pool_user') || 'null');
 let liveData = {};         // full DB snapshot
 let currentWeekId = null;
 let myPicks = {};
@@ -244,14 +243,6 @@ function dbGet(path) { return get(ref(db, path)).then(s => s.val()); }
 function dbSet(path, val) { return set(ref(db, path), val); }
 function dbUpdate(path, val) { return update(ref(db, path), val); }
 function dbPush(path, val) { return push(ref(db, path), val); }
-
-// ── SHA-256 helper ────────────────────────────────────────────────────────
-async function sha256(message) {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
 
 // ── Subscribe to live data ───────────────────────────────────
 function subscribe() {
@@ -365,10 +356,6 @@ function renderLogin() {
         </select>
       </div>
       <div id="login-extra"></div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-        <input type="checkbox" id="remember-me" style="width:16px;height:16px;cursor:pointer;accent-color:var(--accent);"/>
-        <label for="remember-me" style="font-size:13px;color:var(--muted);cursor:pointer;">Remember me</label>
-      </div>
       <button class="btn btn-primary" onclick="doLogin()">Sign in</button>
     </div>
   </div>`;
@@ -383,10 +370,10 @@ window.loginSelChange = function() {
       <div class="input-group"><label>Email address</label><input id="new-email" type="email" placeholder="you@example.com"/></div>
       <div class="input-group"><label>Choose a password (up to 10 characters)</label><input id="new-pin" type="password" maxlength="10" placeholder="up to 10 characters"/></div>`;
   } else if (v === '__admin') {
-    el.innerHTML = `<div class="input-group"><label>Admin password</label><div style="position:relative;"><input id="pin-input" type="password" maxlength="20" placeholder="Password" style="padding-right:40px;"/><button type="button" onclick="togglePinVisibility()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;" id="pin-eye">👁</button></div></div>`;
+    el.innerHTML = `<div class="input-group"><label>Admin password</label><input id="pin-input" type="password" maxlength="20" placeholder="Password"/></div>`;
   } else if (v) {
     el.innerHTML = `
-      <div class="input-group"><label>Password</label><div style="position:relative;"><input id="pin-input" type="password" maxlength="10" placeholder="Password" style="padding-right:40px;"/><button type="button" onclick="togglePinVisibility()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;" id="pin-eye">👁</button></div></div>
+      <div class="input-group"><label>Password</label><input id="pin-input" type="password" maxlength="10" placeholder="Password"/></div>
       <div style="text-align:right;margin-top:-6px;margin-bottom:10px;">
         <button class="link-btn" style="font-size:13px;" onclick="showForgotPassword('${v}')">Forgot password?</button>
       </div>`;
@@ -435,9 +422,9 @@ window.doResetPassword = async function(userId) {
   toast('Password reset! Sign in with your new password.', 3000);
 
   const el = document.getElementById('login-extra');
-  if (el) el.innerHTML = '<div class="input-group"><label>Password</label><div style="position:relative;"><input id="pin-input" type="password" maxlength="10" placeholder="Password" style="padding-right:40px;"/><button type="button" onclick="togglePinVisibility()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;" id="pin-eye">👁</button></div></div>'
+  if (el) el.innerHTML = '<div class="input-group"><label>Password</label><input id="pin-input" type="password" maxlength="10" placeholder="Password"/></div>'
       + '<div style="text-align:right;margin-top:-6px;margin-bottom:10px;">'
-      + '<button class="link-btn" style="font-size:13px;" onclick="showForgotPassword(\x27' + userId + '\x27)">Forgot password?</button>'
+      + '<button class="link-btn" style="font-size:13px;" onclick="showForgotPassword(\'' + userId + '\')">Forgot password?</button>'
       + '</div>';
 };
 
@@ -454,8 +441,7 @@ window.doLogin = async function() {
     if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { toast('Enter a valid email address.'); return; }
     const newRef = await dbPush('/users', { name, pin, email, isAdmin: false, totalCorrect: 0, totalEntries: 0, joinedAt: serverTimestamp() });
     currentUser = { id: newRef.key, name, isAdmin: false };
-    const rememberMe = document.getElementById('remember-me')?.checked;
-    if (rememberMe) { localStorage.setItem('pool_user', JSON.stringify(currentUser)); } else { sessionStorage.setItem('pool_user', JSON.stringify(currentUser)); }
+    sessionStorage.setItem('pool_user', JSON.stringify(currentUser));
     toast(`Welcome, ${name}!`);
     renderApp();
     return;
@@ -463,14 +449,9 @@ window.doLogin = async function() {
 
   if (v === '__admin') {
     const pin = document.getElementById('pin-input')?.value;
-    if (!pin) { toast('Enter password.'); return; }
-    const hashed = await sha256(pin);
-    const storedHash = liveData.adminPinHash;
-    if (!storedHash) { toast('Admin PIN not configured in Firebase yet.'); return; }
-    if (hashed !== storedHash) { toast('Wrong password.'); return; }
+    if (pin !== ADMIN_PIN) { toast('Wrong password.'); return; }
     currentUser = { id: '__admin', name: 'Commissioner', isAdmin: true };
-    const rememberMe = document.getElementById('remember-me')?.checked;
-    if (rememberMe) { localStorage.setItem('pool_user', JSON.stringify(currentUser)); } else { sessionStorage.setItem('pool_user', JSON.stringify(currentUser)); }
+    sessionStorage.setItem('pool_user', JSON.stringify(currentUser));
     renderApp();
     return;
   }
@@ -479,8 +460,7 @@ window.doLogin = async function() {
   const user = getUser(v);
   if (!user || pin !== user.pin) { toast('Wrong password.'); return; }
   currentUser = { id: v, name: user.name, isAdmin: false };
-  const rememberMe = document.getElementById('remember-me')?.checked;
-  if (rememberMe) { localStorage.setItem('pool_user', JSON.stringify(currentUser)); } else { sessionStorage.setItem('pool_user', JSON.stringify(currentUser)); }
+  sessionStorage.setItem('pool_user', JSON.stringify(currentUser));
   renderApp();
 };
 
@@ -629,32 +609,17 @@ function fmtKickoff(kickoff) {
 // "Active" means at least one other player submitted an entry that week.
 function weeksOwed(userId) {
   const weeks = getWeeks();
-  const user = getUser(userId);
-  // Only backfill weeks that started (had entries submitted) AFTER the user joined.
-  // If the user joined outside an active pool week, don't backfill anything.
-  const userJoinedAt = user?.joinedAt || Date.now();
-
   return Object.values(weeks).filter(w => {
-    if (isPlayoff(w)) return false;
+    if (isPlayoff(w)) return false;           // playoff handled separately
     const entries = w.entries ? Object.values(w.entries) : [];
     const hasOtherEntry = entries.some(e => e.userId !== userId);
     const hasMyEntry = entries.some(e => e.userId === userId);
+    // Only count weeks where at least one OTHER settled week exists before it,
+    // meaning this is genuinely a past week the user missed — not the current one.
+    // Key check: the week must be settled OR its week number is less than current week.
     const currentWeek = getWeek(currentWeekId);
     const isPastWeek = w.settled || (currentWeek && w.num < currentWeek.num);
-    if (!isPastWeek || !hasOtherEntry || hasMyEntry) return false;
-
-    // Only count as a missed week if at least one other player submitted
-    // AFTER this user joined — meaning the pool was active when they signed up.
-    const firstOtherEntry = entries
-      .filter(e => e.userId !== userId)
-      .sort((a, b) => (a.submittedAt || 0) - (b.submittedAt || 0))[0];
-
-    // If the earliest entry in this week was submitted BEFORE the user joined,
-    // it means this week was already underway or finished before they signed up.
-    // In that case, don't backfill — they weren't in the pool yet.
-    if (firstOtherEntry && (firstOtherEntry.submittedAt || 0) < userJoinedAt) return false;
-
-    return true;
+    return isPastWeek && hasOtherEntry && !hasMyEntry;
   });
 }
 
@@ -1062,7 +1027,7 @@ function renderAllPicksTab(c) {
     return;
   }
 
-  let html = `<div class="section-head" style="margin-bottom:12px;">Everyone's picks</div>`;
+  let html = '<div class="section-head" style="margin-bottom:12px;">Everyone\'s picks</div>';
 
   visibleWeeks.forEach((w, idx) => {
     const games = w.games ? Object.values(w.games) : [];
@@ -1654,12 +1619,6 @@ function renderAdminWeek(c) {
       <input id="comm-email" type="email" value="${commEmail}" placeholder="yourname@gmail.com" style="flex:1;"/>
       <button class="btn btn-sm btn-secondary" onclick="saveCommEmail()">Save</button>
     </div>
-  </div>
-  <div style="background:var(--bg3);border-radius:var(--radius);padding:14px;margin-bottom:14px;">
-    <div class="section-head" style="margin-bottom:10px;">Change admin password</div>
-    <div class="input-group"><label>New password</label><input id="new-admin-pin" type="password" maxlength="20" placeholder="New password"/></div>
-    <div class="input-group"><label>Confirm new password</label><input id="confirm-admin-pin" type="password" maxlength="20" placeholder="Confirm password"/></div>
-    <button class="btn btn-secondary" onclick="setAdminPin()">Update admin password</button>
   </div>`;
 
   html += `<div class="section-head">Week ${week.num} matchups</div>
@@ -1707,7 +1666,7 @@ function renderAdminWeek(c) {
     </button>
     <button class="btn" style="width:100%;margin-top:8px;border-color:var(--green-text);color:var(--green-text);" onclick="downloadGamesPDF()">
       📄 Download this week's games as PDF
-    </button>`;
+    </button>\`;
   }
   c.innerHTML = html;
 }
@@ -1720,44 +1679,51 @@ window.saveCommEmail = async function() {
 };
 
 window.downloadGamesPDF = function() {
-  var week = getWeek(currentWeekId);
+  const week = getWeek(currentWeekId);
   if (!week) { toast('No week set up yet.'); return; }
-  var games = week.games ? Object.values(week.games) : [];
+
+  const games = week.games ? Object.values(week.games) : [];
   if (!games.length) { toast('No games set up yet.'); return; }
-  var weekLabel = week.playoff ? (week.playoffLabel || 'Playoff') : ('Week ' + week.num);
-  var appName = 'Tri Boro Pick 6 Pool';
-  var gameRows = games.map(function(g, i) {
-    var kickoffStr = g.kickoff ? fmtKickoff(g.kickoff) : 'Kickoff TBD';
+
+  const weekLabel = week.playoff ? (week.playoffLabel || 'Playoff') : ('Week ' + week.num);
+  const appName = 'Tri Boro Pick 6 Pool';
+
+  const gameRows = games.map(function(g, i) {
+    const kickoffStr = g.kickoff ? fmtKickoff(g.kickoff) : 'Kickoff TBD';
     return '<tr style="border-bottom:1px solid #eee;">'
       + '<td style="padding:8px 10px;font-size:13px;color:#666;">' + (i+1) + '</td>'
       + '<td style="padding:8px 10px;font-weight:600;font-size:14px;">' + (g.away||'TBD') + ' @ ' + (g.home||'TBD') + '</td>'
       + '<td style="padding:8px 10px;font-size:13px;color:#555;">' + kickoffStr + '</td>'
       + '</tr>';
   }).join('');
-  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+
+  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
     + '<title>' + appName + ' - ' + weekLabel + '</title>'
-    + '<style>body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;max-width:500px;margin:0 auto;padding:24px;color:#1a1a1a;}'
-    + 'h1{font-size:20px;margin:0 0 4px;}h2{font-size:15px;color:#555;margin:0 0 20px;font-weight:400;}'
+    + '<style>'
+    + 'body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;max-width:500px;margin:0 auto;padding:24px;color:#1a1a1a;}'
+    + 'h1{font-size:20px;margin:0 0 4px;}'
+    + 'h2{font-size:15px;color:#555;margin:0 0 20px;font-weight:400;}'
     + 'table{width:100%;border-collapse:collapse;}'
     + 'th{text-align:left;padding:8px 10px;background:#f5f5f5;border-bottom:2px solid #ddd;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:.5px;}'
     + '.footer{margin-top:24px;font-size:12px;color:#999;text-align:center;border-top:1px solid #eee;padding-top:12px;}'
     + '</style></head><body>'
     + '<h1>' + appName + '</h1>'
-    + '<h2>' + weekLabel + ' - Pick your winners!</h2>'
+    + '<h2>' + weekLabel + ' — Pick your winners!</h2>'
     + '<table><thead><tr><th>#</th><th>Matchup</th><th>Kickoff (ET)</th></tr></thead>'
     + '<tbody>' + gameRows + '</tbody></table>'
-    + '<div class="footer">Pick all 6 winners before kickoff</div>'
+    + '<div class="footer">Pick all 6 winners before kickoff — log in at ' + window.location.host + '</div>'
     + '</body></html>';
-  var blob = new Blob([html], { type: 'text/html' });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
   a.href = url;
-  a.download = appName.replace(/ /g,'-') + '-' + weekLabel.replace(/ /g,'-') + '-Games.html';
+  a.download = appName.replace(/ /g,'-') + '-' + weekLabel.replace(/ /g,'-') + '-Games.pdf';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-  toast('Downloaded - open the file to view or share', 3000);
+  toast('Downloaded — open the file to view or share', 3000);
 };
 
 window.emailPlayers = function() {
@@ -1815,20 +1781,21 @@ window.addWeek = async function() {
   // amount rolls forward — not the raw entry fees.
   // Weeks where someone won start fresh (carryover = 0).
   let carryover = 0;
-  // Find the last week that had a winner (or start of pool if none)
-  // and sum totalPot() for every no-winner week after that.
-  let foundWinner = false;
+  // The most recent settled no-winner week's winnablePot already contains
+  // all prior carryover baked in. Just take that one value — don't sum
+  // across multiple weeks or you'll double-count earlier carryovers.
   const settledChron = ids
     .map(id => weeks[id])
     .filter(w => w.settled)
     .sort((a, b) => a.num - b.num);
 
-  // Walk backwards: once we hit a week with a winner, stop accumulating.
-  // Use stored winnablePot if available (set at settle time), else recalculate.
+  // Find the most recent settled week with no winner.
+  // If it had no winner its winnablePot IS the full accumulated carryover.
   for (let i = settledChron.length - 1; i >= 0; i--) {
     const w = settledChron[i];
-    if (w.winners && w.winners.length) break;
-    carryover += (w.winnablePot !== undefined) ? w.winnablePot : totalPot(w);
+    if (w.winners && w.winners.length) break; // last week had a winner → no carryover
+    carryover = (w.winnablePot !== undefined) ? w.winnablePot : totalPot(w);
+    break; // only need the most recent no-winner week
   }
 
   const num = ids.length + 1;
@@ -1866,7 +1833,8 @@ window.addPlayoffWeek = async function() {
   }
 
   // Only carry over on the first playoff week (Wild Card).
-  // Sum the winnable pot from all regular season no-winner weeks since the last winner.
+  // The most recent no-winner week's winnablePot already contains all prior
+  // carryover — just use that one value, don't sum across weeks.
   let carryover = 0;
   if (existingPlayoff.length === 0) {
     const regularWeeks = Object.values(weeks)
@@ -1875,7 +1843,8 @@ window.addPlayoffWeek = async function() {
     for (let i = regularWeeks.length - 1; i >= 0; i--) {
       const w = regularWeeks[i];
       if (w.winners && w.winners.length) break; // stop at last winner
-      carryover += totalPot(w);
+      carryover = (w.winnablePot !== undefined) ? w.winnablePot : totalPot(w);
+      break; // only need the most recent no-winner week
     }
   }
 
@@ -2481,41 +2450,49 @@ window.emailResults = function() {
 };
 
 window.downloadResultsPDF = function() {
-  var week = getWeek(currentWeekId);
+  const week = getWeek(currentWeekId);
   if (!week || !week.settled) { toast('Settle the week first.'); return; }
-  var games = week.games ? Object.values(week.games) : [];
-  var entries = week.entries ? Object.values(week.entries) : [];
-  var weekLabel = week.playoff ? (week.playoffLabel || 'Playoff') : ('Week ' + week.num);
-  var appName = 'Tri Boro Pick 6 Pool';
-  var byName = {};
+
+  const games = week.games ? Object.values(week.games) : [];
+  const entries = week.entries ? Object.values(week.entries) : [];
+  const weekLabel = week.playoff ? (week.playoffLabel || 'Playoff') : ('Week ' + week.num);
+  const appName = 'Tri Boro Pick 6 Pool';
+
+  // Deduplicate entries by name
+  const byName = {};
   entries.forEach(function(e) {
-    var key = (e.name||'').toLowerCase().trim();
+    const key = (e.name||'').toLowerCase().trim();
     if (!byName[key]) { byName[key] = e; return; }
     if (Object.keys(e.picks||{}).length > Object.keys(byName[key].picks||{}).length) byName[key] = e;
   });
-  var sorted = Object.values(byName).sort(function(a,b) { return (b.correct||0)-(a.correct||0); });
-  var winners = week.winners || [];
-  var tp = totalPot(week);
-  var rows = sorted.map(function(e, i) {
-    var won = winners.includes(e.name);
-    var score = (e.correct||0) + '/' + games.length;
-    var scoreColor = e.correct === games.length ? '#238636' : e.correct >= 4 ? '#9e6a03' : '#da3633';
+  const sorted = Object.values(byName).sort(function(a,b) { return (b.correct||0)-(a.correct||0); });
+  const winners = week.winners || [];
+  const tp = totalPot(week);
+
+  // Build HTML for the PDF
+  const rows = sorted.map(function(e, i) {
+    const won = winners.includes(e.name);
+    const score = (e.correct||0) + '/' + games.length;
+    const scoreColor = e.correct === games.length ? '#238636' : e.correct >= 4 ? '#9e6a03' : '#da3633';
     return '<tr style="border-bottom:1px solid #ddd;">'
       + '<td style="padding:8px 10px;color:#666;">' + (i+1) + '</td>'
-      + '<td style="padding:8px 10px;font-weight:' + (won?'700':'400') + ';">' + e.name + (won?' Trophy':'') + '</td>'
+      + '<td style="padding:8px 10px;font-weight:' + (won?'700':'400') + ';">' + e.name + (won?' 🏆':'') + '</td>'
       + '<td style="padding:8px 10px;text-align:center;font-weight:600;color:' + scoreColor + ';">' + score + '</td>'
       + '</tr>';
   }).join('');
-  var gameRows = games.map(function(g) {
+
+  const gameRows = games.map(function(g) {
     return '<tr style="border-bottom:1px solid #eee;">'
       + '<td style="padding:6px 10px;color:#444;">' + (g.away||'') + ' @ ' + (g.home||'') + '</td>'
-      + '<td style="padding:6px 10px;font-weight:600;color:#238636;">' + (g.winner || '-') + '</td>'
+      + '<td style="padding:6px 10px;font-weight:600;color:#238636;">' + (g.winner || '—') + '</td>'
       + '</tr>';
   }).join('');
-  var potLine = winners.length
-    ? '<p style="color:#238636;font-weight:600;font-size:16px;margin:0;">' + winners.join(' & ') + ' won $' + tp + '!</p>'
-    : '<p style="color:#9e6a03;font-weight:600;font-size:16px;margin:0;">No winner - $' + tp + ' carries over.</p>';
-  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+
+  const potLine = winners.length
+    ? '<p style="color:#238636;font-weight:600;font-size:16px;margin:0;">🏆 ' + winners.join(' & ') + ' won $' + tp + '!</p>'
+    : '<p style="color:#9e6a03;font-weight:600;font-size:16px;margin:0;">No winner — $' + tp + ' carries over to next week.</p>';
+
+  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
     + '<title>' + appName + ' - ' + weekLabel + ' Results</title>'
     + '<style>body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#1a1a1a;}'
     + 'h1{font-size:22px;margin:0 0 4px;}h2{font-size:16px;color:#555;margin:0 0 20px;font-weight:400;}'
@@ -2529,16 +2506,18 @@ window.downloadResultsPDF = function() {
     + '<div class="section"><h3 style="margin:0 0 10px;font-size:14px;color:#555;text-transform:uppercase;letter-spacing:.5px;">Scores</h3>'
     + '<table><thead><tr><th>#</th><th>Player</th><th style="text-align:center;">Score</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
     + '</body></html>';
-  var blob = new Blob([html], { type: 'text/html' });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
+
+  // Open in new tab — on mobile, Save/Share as PDF from the browser
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
   a.href = url;
-  a.download = appName.replace(/ /g,'-') + '-' + weekLabel.replace(/ /g,'-') + '-Results.html';
+  a.download = appName.replace(/ /g,'-') + '-' + weekLabel.replace(/ /g,'-') + '-Results.pdf';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
-  toast('Downloaded - open the file to view or share', 3000);
+  toast('Downloaded — open the file to view or share', 3000);
 };
 
 window.manualWinner = async function(gid, side) {
@@ -2981,41 +2960,10 @@ window.toggleHistDetail = function(id) {
   }
 };
 
-window.setAdminPin = async function() {
-  const newPin = document.getElementById('new-admin-pin')?.value;
-  const confirmPin = document.getElementById('confirm-admin-pin')?.value;
-  if (!newPin || newPin.length < 4) { toast('Password must be at least 4 characters.'); return; }
-  if (newPin !== confirmPin) { toast('Passwords do not match.'); return; }
-  try {
-    const hashed = await sha256(newPin);
-    await update(ref(db, '/'), { adminPinHash: hashed });
-    document.getElementById('new-admin-pin').value = '';
-    document.getElementById('confirm-admin-pin').value = '';
-    toast('Admin password updated ✓', 3000);
-  } catch(e) {
-    toast('Error updating password: ' + e.message, 5000);
-    console.error(e);
-  }
-};
-
-window.togglePinVisibility = function() {
-  const input = document.getElementById('pin-input');
-  const eye = document.getElementById('pin-eye');
-  if (!input) return;
-  if (input.type === 'password') {
-    input.type = 'text';
-    if (eye) eye.textContent = '🙈';
-  } else {
-    input.type = 'password';
-    if (eye) eye.textContent = '👁';
-  }
-};
-
 window.signOut = function() {
   currentUser = null;
   myPicks = {};
   sessionStorage.removeItem('pool_user');
-  localStorage.removeItem('pool_user');
   renderApp();
 };
 
