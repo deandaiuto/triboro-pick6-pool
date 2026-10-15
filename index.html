@@ -224,7 +224,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // ── State ────────────────────────────────────────────────────
-let currentUser = JSON.parse(sessionStorage.getItem('pool_user') || 'null');
+let currentUser = JSON.parse(localStorage.getItem('pool_user') || sessionStorage.getItem('pool_user') || 'null');
 let liveData = {};         // full DB snapshot
 let currentWeekId = null;
 let myPicks = {};
@@ -356,6 +356,9 @@ function renderLogin() {
         </select>
       </div>
       <div id="login-extra"></div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;text-transform:none;letter-spacing:0;color:var(--muted);margin:8px 0;">
+        <input type="checkbox" id="remember-me" style="width:auto;padding:0;"> Remember me
+      </label>
       <button class="btn btn-primary" onclick="doLogin()">Sign in</button>
     </div>
   </div>`;
@@ -431,6 +434,11 @@ window.doResetPassword = async function(userId) {
 window.doLogin = async function() {
   const v = document.getElementById('sel-user').value;
   if (!v) { toast('Select your name first.'); return; }
+  const remember = document.getElementById('remember-me')?.checked;
+  const store = (data) => {
+    if (remember) { localStorage.setItem('pool_user', JSON.stringify(data)); sessionStorage.removeItem('pool_user'); }
+    else { sessionStorage.setItem('pool_user', JSON.stringify(data)); localStorage.removeItem('pool_user'); }
+  };
 
   if (v === '__new') {
     const name = document.getElementById('new-name')?.value.trim();
@@ -441,7 +449,7 @@ window.doLogin = async function() {
     if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { toast('Enter a valid email address.'); return; }
     const newRef = await dbPush('/users', { name, pin, email, isAdmin: false, totalCorrect: 0, totalEntries: 0, joinedAt: serverTimestamp() });
     currentUser = { id: newRef.key, name, isAdmin: false };
-    sessionStorage.setItem('pool_user', JSON.stringify(currentUser));
+    store(currentUser);
     toast(`Welcome, ${name}!`);
     renderApp();
     return;
@@ -451,7 +459,7 @@ window.doLogin = async function() {
     const pin = document.getElementById('pin-input')?.value;
     if (pin !== ADMIN_PIN) { toast('Wrong password.'); return; }
     currentUser = { id: '__admin', name: 'Commissioner', isAdmin: true };
-    sessionStorage.setItem('pool_user', JSON.stringify(currentUser));
+    store(currentUser);
     renderApp();
     return;
   }
@@ -460,7 +468,7 @@ window.doLogin = async function() {
   const user = getUser(v);
   if (!user || pin !== user.pin) { toast('Wrong password.'); return; }
   currentUser = { id: v, name: user.name, isAdmin: false };
-  sessionStorage.setItem('pool_user', JSON.stringify(currentUser));
+  store(currentUser);
   renderApp();
 };
 
@@ -2963,7 +2971,7 @@ window.toggleHistDetail = function(id) {
 window.signOut = function() {
   currentUser = null;
   myPicks = {};
-  sessionStorage.removeItem('pool_user');
+  sessionStorage.removeItem('pool_user'); localStorage.removeItem('pool_user');
   renderApp();
 };
 
