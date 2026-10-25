@@ -214,7 +214,7 @@ const firebaseConfig = {
   measurementId: "G-6KLDCV5ZNV"
 };
 
-const ADMIN_PIN = '1234';
+function getAdminPin() { return liveData.commissionerPin || '1234'; }
 const ENTRY_FEE = 5;
 const SEASON_SKIM = 10;    // $10/week skimmed into Most Wins Pot
 const PLAYOFF_ENTRY = 20;  // flat $20 to enter the playoff pool
@@ -457,7 +457,7 @@ window.doLogin = async function() {
 
   if (v === '__admin') {
     const pin = document.getElementById('pin-input')?.value;
-    if (pin !== ADMIN_PIN) { toast('Wrong password.'); return; }
+    if (pin !== getAdminPin()) { toast('Wrong password.'); return; }
     currentUser = { id: '__admin', name: 'Commissioner', isAdmin: true };
     store(currentUser);
     renderApp();
@@ -1628,6 +1628,13 @@ function renderAdminWeek(c) {
       <input id="comm-email" type="email" value="${commEmail}" placeholder="yourname@gmail.com" style="flex:1;"/>
       <button class="btn btn-sm btn-secondary" onclick="saveCommEmail()">Save</button>
     </div>
+  </div>
+  <div class="input-group" style="margin-bottom:14px;">
+    <label>Commissioner password</label>
+    <div style="display:flex;gap:8px;">
+      <input id="comm-pin" type="password" placeholder="New password" style="flex:1;"/>
+      <button class="btn btn-sm btn-secondary" onclick="saveCommPin()">Save</button>
+    </div>
   </div>`;
 
   html += `<div class="section-head">Week ${week.num} matchups</div>
@@ -1781,6 +1788,14 @@ window.saveCommEmail = async function() {
   if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { toast('Enter a valid email.'); return; }
   await dbSet('/commissionerEmail', email);
   toast('Commissioner email saved ✓');
+};
+
+window.saveCommPin = async function() {
+  const pin = document.getElementById('comm-pin')?.value.trim();
+  if (!pin || pin.length < 1 || pin.length > 20) { toast('Enter a password (1–20 characters).'); return; }
+  await dbSet('/commissionerPin', pin);
+  document.getElementById('comm-pin').value = '';
+  toast('Commissioner password updated ✓');
 };
 
 window.downloadGamesPDF = function() {
