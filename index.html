@@ -658,7 +658,8 @@ function renderPickTab(c, week) {
   const allKickedOff = games.every(g => gameKickedOff(g));
   const anyKickedOff = games.some(g => gameKickedOff(g));
   const pickedCount = games.filter(g => myPicks[g.id]).length;
-  const allPicked = pickedCount === games.length;
+  const pickableGames = games.filter(g => !gameKickedOff(g));
+  const allPicked = pickableGames.length === 0 || pickableGames.every(g => myPicks[g.id]);
 
   // ── Player money summary ─────────────────────────────────────
   const uid = currentUser.id;
@@ -1676,8 +1677,104 @@ function renderAdminWeek(c) {
       📄 Download this week's games as PDF
     </button>`;
   }
+
+  // ── Admin: submit picks on behalf of a player ────────────────
+  if (!week.settled && games.length) {
+    const players = Object.entries(getUsers()).filter(([,u]) => !u.isAdmin);
+    const existingEntries = week.entries ? Object.values(week.entries).map(e => e.userId) : [];
+    const eligiblePlayers = players.filter(([id]) => !existingEntries.includes(id));
+
+    if (eligiblePlayers.length) {
+      html += `<div class="section-head" style="margin-top:20px;">Submit picks for a player</div>
+      <div class="card" style="padding:14px;">
+        <div class="input-group">
+          <label>Select player</label>
+          <select id="admin-pick-player">
+            <option value="">Choose player…</option>
+            ${eligiblePlayers.map(([id,u]) => `<option value="${id}">${u.name}</option>`).join('')}
+          </select>
+        </div>
+        <div style="margin-top:10px;">
+        ${games.map(g => `
+          <div style="margin-bottom:10px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:5px;">${g.away} vs ${g.home}${gameKickedOff(g) ? ' <span style="color:var(--gold);font-size:11px;">LOCKED</span>' : ''}</div>
+            <div style="display:flex;gap:8px;">
+              <button id="apick-${g.id}-away" class="btn btn-secondary" style="flex:1;font-size:13px;" onclick="adminTogglePick('${g.id}','away')">${g.away}</button>
+              <button id="apick-${g.id}-home" class="btn btn-secondary" style="flex:1;font-size:13px;" onclick="adminTogglePick('${g.id}','home')">${g.home}</button>
+            </div>
+          </div>`).join('')}
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:6px;" onclick="adminSubmitPicks()">Submit picks</button>
+      </div>`;
+    }
+  }
+
   c.innerHTML = html;
 }
+
+// Admin pick-on-behalf state
+let adminPickSelections = {};
+
+window.adminTogglePick = function(gameId, side) {
+  const week = getWeek(currentWeekId);
+  if (!week) return;
+  const games = week.games ? Object.values(week.games) : [];
+  const g = games.find(g => g.id === gameId);
+  if (!g) return;
+  // Store the actual team name, same as playerPick does
+  adminPickSelections[gameId] = side === 'away' ? g.away : g.home;
+  // Update button styles
+  games.forEach(g => {
+    const awayBtn = document.getElementById(`apick-${g.id}-away`);
+    const homeBtn = document.getElementById(`apick-${g.id}-home`);
+    if (!awayBtn || !homeBtn) return;
+    const sel = adminPickSelections[g.id];
+    awayBtn.classList.toggle('btn-primary', sel === g.away);
+    awayBtn.classList.toggle('btn-secondary', sel !== g.away);
+    homeBtn.classList.toggle('btn-primary', sel === g.home);
+    homeBtn.classList.toggle('btn-secondary', sel !== g.home);
+  });
+};
+
+window.adminSubmitPicks = async function() {
+  const week = getWeek(currentWeekId);
+  if (!week) return;
+  const games = week.games ? Object.values(week.games) : [];
+  const playerId = document.getElementById('admin-pick-player')?.value;
+  if (!playerId) { toast('Select a player first.'); return; }
+
+  // Require picks for all unlocked games; locked games without a pick are skipped
+  const unlockedGames = games.filter(g => !gameKickedOff(g));
+  const missingPicks = unlockedGames.filter(g => !adminPickSelections[g.id]);
+  if (missingPicks.length) { toast(`Still need picks for: ${missingPicks.map(g => g.away + ' vs ' + g.home).join(', ')}`); return; }
+
+  // Build picks object — include locked games if admin picked them too
+  const picks = {};
+  games.forEach(g => {
+    if (adminPickSelections[g.id]) picks[g.id] = adminPickSelections[g.id];
+  });
+
+  const playerData = getUser(playerId);
+  const entryKey = 'e_' + playerId + '_' + currentWeekId;
+  await dbSet(`/weeks/${currentWeekId}/entries/${entryKey}`, {
+    userId: playerId,
+    name: playerData?.name || playerId,
+    picks,
+    correct: null,
+    submittedAt: Date.now(),
+    submittedByAdmin: true
+  });
+
+  // Update player entry count
+  if (!isPlayoff(week)) {
+    const prev = playerData?.totalEntries || 0;
+    await dbSet(`/users/${playerId}/totalEntries`, prev + 1);
+  }
+
+  adminPickSelections = {};
+  toast(`Picks submitted for ${playerData?.name || playerId} ✓`);
+  renderAdminContent();
+};
 
 window.saveCommEmail = async function() {
   const email = document.getElementById('comm-email')?.value.trim();
