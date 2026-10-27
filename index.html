@@ -214,7 +214,7 @@ const firebaseConfig = {
   measurementId: "G-6KLDCV5ZNV"
 };
 
-function getAdminPin() { return liveData.adminPinHash || '1234'; }
+function getAdminPin() { return String(liveData.adminPinHash || '1234'); }
 const ENTRY_FEE = 5;
 const SEASON_SKIM = 10;    // $10/week skimmed into Most Wins Pot
 const PLAYOFF_ENTRY = 20;  // flat $20 to enter the playoff pool
@@ -658,8 +658,7 @@ function renderPickTab(c, week) {
   const allKickedOff = games.every(g => gameKickedOff(g));
   const anyKickedOff = games.some(g => gameKickedOff(g));
   const pickedCount = games.filter(g => myPicks[g.id]).length;
-  const pickableGames = games.filter(g => !gameKickedOff(g));
-  const allPicked = pickableGames.length === 0 || pickableGames.every(g => myPicks[g.id]);
+  const allPicked = true;
 
   // ── Player money summary ─────────────────────────────────────
   const uid = currentUser.id;
@@ -838,7 +837,7 @@ window.submitPicks = async function() {
   const week = getWeek(currentWeekId);
   if (!week) return;
   const games = week.games ? Object.values(week.games) : [];
-  if (Object.keys(myPicks).length < games.length) { toast('Pick a winner for every game.'); return; }
+  if (Object.keys(myPicks).length === 0) { toast('Make at least one pick before submitting.'); return; }
 
   const entryList = week.entries ? Object.entries(week.entries) : [];
   if (entryList.find(([,e]) => e.userId === currentUser.id)) { toast('Already submitted.'); return; }
